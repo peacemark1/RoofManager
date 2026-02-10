@@ -92,18 +92,24 @@ model User {
 
 
 model Subscription {
-  id                String   @id @default(uuid())
+  id                String    @id @default(uuid())
   tier              String
   status            String
   stripeCustomerId  String?
   stripeSubId       String?
   currentPeriodEnd  DateTime?
+  startDate         DateTime  @default(now())
+  billingCycle      String    @default("MONTHLY")
+  maxUsers          Int       @default(3)
+  maxJobs           Int       @default(10)
+  maxStorage        BigInt    @default(1073741824) // 1GB
+  features          String    @default("{\"ai\": false, \"payments\": true, \"chatbot\": false}")
   
-  companyId         String   @unique
-  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId         String    @unique
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
   
   @@index([companyId])
 }
