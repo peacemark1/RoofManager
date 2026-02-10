@@ -11,6 +11,15 @@ export const metadata = {
 };
 
 const Layout = ({ children }: { children: ReactNode }) => {
+  // Temporary: Unregister existing service workers to clear stale cache
+  if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (registrations) {
+      for (let registration of registrations) {
+        registration.unregister()
+      }
+    })
+  }
+
   return (
     <html lang="en">
       <body className={inter.className}>
