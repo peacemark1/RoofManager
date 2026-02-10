@@ -293,17 +293,24 @@ async function getNotificationPreferencesData(userId) {
 
   if (!user) return null
 
-  const emailNotifications = typeof user.emailNotifications === 'string'
-    ? JSON.parse(user.emailNotifications)
-    : user.emailNotifications || {}
+  let emailNotifications = {};
+  let smsNotifications = {};
 
-  const smsNotifications = typeof user.smsNotifications === 'string'
-    ? JSON.parse(user.smsNotifications)
-    : user.smsNotifications || {}
+  try {
+    emailNotifications = typeof user.emailNotifications === 'string'
+      ? JSON.parse(user.emailNotifications)
+      : user.emailNotifications || {}
+
+    smsNotifications = typeof user.smsNotifications === 'string'
+      ? JSON.parse(user.smsNotifications)
+      : user.smsNotifications || {}
+  } catch (e) {
+    console.error('Failed to parse notification settings in helper:', e);
+  }
 
   return {
-    emailEnabled: emailNotifications.enabled !== false,
-    smsEnabled: smsNotifications.enabled === true,
+    emailEnabled: emailNotifications?.enabled !== false,
+    smsEnabled: smsNotifications?.enabled === true,
     invoiceThreshold: user.invoiceThreshold || 0,
     quietHoursStart: user.quietHoursStart || '21:00',
     quietHoursEnd: user.quietHoursEnd || '07:00',
