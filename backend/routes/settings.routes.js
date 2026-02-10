@@ -9,7 +9,7 @@ const settingsController = require('../controllers/settings.controller')
 const authMiddleware = require('../middleware/auth.middleware')
 
 // All routes require authentication
-router.use(authMiddleware)
+router.use(authMiddleware.authenticate)
 
 /**
  * @route   GET /api/settings

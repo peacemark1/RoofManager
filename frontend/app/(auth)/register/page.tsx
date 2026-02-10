@@ -8,7 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function RegisterPage() {
-  const [name, setName] = useState("")
+  const [companyName, setCompanyName] = useState("")
+  const [subdomain, setSubdomain] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -28,20 +32,38 @@ export default function RegisterPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          company: {
+            name: companyName,
+            subdomain: subdomain
+          },
+          user: {
+            email,
+            password,
+            firstName,
+            lastName,
+            phone
+          }
+        }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.message || "Registration failed")
+        throw new Error(data.error?.message || "Registration failed")
       }
 
-      router.push("/login")
+      // Store the token
+      if (data.data?.token) {
+        localStorage.setItem('token', data.data.token)
+      }
+
+      router.push("/dashboard")
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -62,15 +84,70 @@ export default function RegisterPage() {
               <div className="text-red-500 text-sm">{error}</div>
             )}
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">
-                Full Name
+              <label htmlFor="companyName" className="text-sm font-medium">
+                Company Name
               </label>
               <Input
-                id="name"
+                id="companyName"
                 type="text"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                placeholder="Acme Roofing"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="subdomain" className="text-sm font-medium">
+                Subdomain
+              </label>
+              <Input
+                id="subdomain"
+                type="text"
+                placeholder="acmeroofing"
+                value={subdomain}
+                onChange={(e) => setSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, ''))}
+                required
+              />
+              <p className="text-xs text-gray-500">This will be your unique identifier</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label htmlFor="firstName" className="text-sm font-medium">
+                  First Name
+                </label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  placeholder="John"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="lastName" className="text-sm font-medium">
+                  Last Name
+                </label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  placeholder="Doe"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="phone" className="text-sm font-medium">
+                Phone Number
+              </label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="1234567890"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 required
               />
             </div>

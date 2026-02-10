@@ -1,0 +1,302 @@
+[dotenv@17.2.4] injecting env (19) from .env -- tip: ≡ƒæÑ sync secrets across teammates & machines: https://dotenvx.com/ops
+≡ƒÜÇ Server running on port 3001
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5
+Registration error: TypeError: Cannot read properties of undefined (reading 'subdomain')
+    at register (C:\Users\USER\roofing\backend\controllers\auth.controller.js:9:91)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\USER\roofing\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at router.handle (C:\Users\USER\roofing\backend\node_modules\router\index.js:186:3)
+    at router (C:\Users\USER\roofing\backend\node_modules\router\index.js:60:12)
+    at Layer.handleRequest (C:\Users\USER\roofing\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\USER\roofing\backend\node_modules\router\index.js:342:13)
+    at C:\Users\USER\roofing\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\USER\roofing\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\USER\roofing\backend\node_modules\router\index.js:291:5)
+    at C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:942:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\USER\roofing\backend\node_modules\express-rate-limit\dist\index.cjs:825:5

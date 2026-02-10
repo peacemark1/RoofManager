@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -19,7 +19,7 @@ model Company {
   primaryColor      String   @default("#1e40af")
   secondaryColor    String   @default("#3b82f6")
   font              String   @default("Inter")
-  enabledModules    Json     @default("{\"ai\": true, \"payments\": true, \"chatbot\": true}")
+  enabledModules    String     @default("{\"ai\": true, \"payments\": true, \"chatbot\": true}")
   
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -48,12 +48,12 @@ model User {
   firstName         String
   lastName          String
   phone             String?
-  role              UserRole
+  role              String
   isActive          Boolean  @default(true)
   
   // Notification preferences (stored as JSON)
-  emailNotifications Json     @default("{}")
-  smsNotifications   Json     @default("{}")
+  emailNotifications String     @default("{}")
+  smsNotifications   String     @default("{}")
   
   // Quiet hours (no SMS between these times)
   quietHoursStart    String?  @default("21:00")
@@ -79,18 +79,12 @@ model User {
   @@index([email])
 }
 
-enum UserRole {
-  ADMIN
-  ESTIMATOR
-  FIELD_CREW
-  FOREMAN
-  CLIENT
-}
+
 
 model Subscription {
   id                String   @id @default(uuid())
-  tier              SubscriptionTier
-  status            SubscriptionStatus
+  tier              String
+  status            String
   stripeCustomerId  String?
   stripeSubId       String?
   currentPeriodEnd  DateTime?
@@ -104,19 +98,9 @@ model Subscription {
   @@index([companyId])
 }
 
-enum SubscriptionTier {
-  FREE
-  STARTER
-  PROFESSIONAL
-  ENTERPRISE
-}
 
-enum SubscriptionStatus {
-  ACTIVE
-  CANCELED
-  PAST_DUE
-  TRIALING
-}
+
+
 
 // ============================================================================
 // LEAD & JOB PIPELINE
@@ -129,8 +113,8 @@ model Lead {
   email             String
   phone             String
   address           String?
-  source            LeadSource
-  status            LeadStatus
+  source            String
+  status            String
   notes             String?
   
   companyId         String
@@ -146,22 +130,9 @@ model Lead {
   @@index([status])
 }
 
-enum LeadSource {
-  WEBSITE
-  REFERRAL
-  COLD_CALL
-  SOCIAL_MEDIA
-  ADVERTISING
-  OTHER
-}
 
-enum LeadStatus {
-  NEW
-  CONTACTED
-  QUALIFIED
-  CONVERTED
-  LOST
-}
+
+
 
 model Job {
   id                String   @id @default(uuid())
@@ -172,10 +143,10 @@ model Job {
   latitude          Float?
   longitude         Float?
   
-  propertyType      PropertyType
+  propertyType      String
   roofSize          Float?    // square feet
   roofPitch         String?
-  status            JobStatus
+  status            String
   
   scheduledStart    DateTime?
   scheduledEnd      DateTime?
@@ -218,26 +189,9 @@ model Job {
   @@index([customerId])
 }
 
-enum PropertyType {
-  RESIDENTIAL
-  COMMERCIAL
-  INDUSTRIAL
-  MULTI_FAMILY
-}
 
-enum JobStatus {
-  PROSPECT
-  SCOUTED
-  ESTIMATING
-  QUOTED
-  APPROVED
-  SCHEDULED
-  IN_PROGRESS
-  COMPLETED
-  INVOICED
-  PAID
-  CANCELED
-}
+
+
 
 model JobAssignment {
   id                String   @id @default(uuid())
@@ -323,11 +277,11 @@ model Quote {
   id                String   @id @default(uuid())
   quoteNumber       String   @unique
   validUntil        DateTime
-  status            QuoteStatus
+  status            String
   pdfUrl            String?
   publicLink        String   @unique
   
-  lineItems         Json     // Array of {description, quantity, unitPrice, total}
+  lineItems         String     // Array of {description, quantity, unitPrice, total}
   subtotal          Float
   tax               Float    @default(0)
   discount          Float    @default(0)
@@ -366,14 +320,7 @@ model Quote {
   @@index([customerId])
 }
 
-enum QuoteStatus {
-  DRAFT
-  SENT
-  VIEWED
-  APPROVED
-  REJECTED
-  EXPIRED
-}
+
 
 model QuoteApproval {
   id                String   @id @default(uuid())
@@ -438,7 +385,7 @@ model PurchaseOrder {
   id                String   @id @default(uuid())
   poNumber          String   @unique
   supplier          String
-  status            POStatus
+  status            String
   orderDate         DateTime @default(now())
   expectedDate      DateTime?
   receivedDate      DateTime?
@@ -452,13 +399,7 @@ model PurchaseOrder {
   @@index([poNumber])
 }
 
-enum POStatus {
-  DRAFT
-  ORDERED
-  PARTIALLY_RECEIVED
-  RECEIVED
-  CANCELED
-}
+
 
 model PurchaseOrderItem {
   id                String   @id @default(uuid())
@@ -484,10 +425,10 @@ model Invoice {
   id                String   @id @default(uuid())
   invoiceNumber     String   @unique
   dueDate           DateTime
-  status            InvoiceStatus
+  status            String
   pdfUrl            String?
   
-  lineItems         Json
+  lineItems         String
   subtotal          Float
   tax               Float
   total             Float
@@ -520,23 +461,15 @@ model Invoice {
   @@index([customerId])
 }
 
-enum InvoiceStatus {
-  DRAFT
-  SENT
-  VIEWED
-  PARTIALLY_PAID
-  PAID
-  OVERDUE
-  CANCELED
-}
+
 
 model Payment {
   id                String   @id @default(uuid())
   amount            Float
-  method            PaymentMethod
+  method            String
   transactionId     String?
   stripePaymentId   String?
-  status            PaymentStatus
+  status            String
   paidAt            DateTime?
   
   invoiceId         String
@@ -549,20 +482,9 @@ model Payment {
   @@index([stripePaymentId])
 }
 
-enum PaymentMethod {
-  CREDIT_CARD
-  BANK_TRANSFER
-  CASH
-  CHECK
-  MOBILE_MONEY
-}
 
-enum PaymentStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  REFUNDED
-}
+
+
 
 // ============================================================================
 // COMMUNICATION
@@ -570,12 +492,12 @@ enum PaymentStatus {
 
 model Notification {
   id                String   @id @default(uuid())
-  type              NotificationType
-  channel           NotificationChannel
+  type              String
+  channel           String
   recipient         String   // email or phone
   subject           String?
   body              String
-  status            NotificationStatus
+  status            String
   sentAt            DateTime?
   errorMessage      String?
   
@@ -588,28 +510,11 @@ model Notification {
   @@index([status])
 }
 
-enum NotificationType {
-  QUOTE_SENT
-  QUOTE_APPROVED
-  JOB_ASSIGNED
-  JOB_STARTING
-  PAYMENT_RECEIVED
-  PAYMENT_REMINDER
-  GENERAL
-}
 
-enum NotificationChannel {
-  EMAIL
-  SMS
-  PUSH
-}
 
-enum NotificationStatus {
-  QUEUED
-  SENT
-  FAILED
-  CANCELED
-}
+
+
+
 
 model ChatMessage {
   id                String   @id @default(uuid())
@@ -654,7 +559,7 @@ model IncidentReport {
   id                String   @id @default(uuid())
   title             String
   description       String
-  severity          IncidentSeverity
+  severity          String
   resolvedAt        DateTime?
   resolution        String?
   
@@ -671,12 +576,7 @@ model IncidentReport {
   @@index([severity])
 }
 
-enum IncidentSeverity {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
+
 
 model CompanyMetrics {
   id                String   @id @default(uuid())
