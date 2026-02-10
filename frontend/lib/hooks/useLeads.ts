@@ -20,7 +20,7 @@ export function useLeads() {
     queryKey: ["leads"],
     queryFn: async () => {
       const response = await api.get("/leads")
-      return response.data
+      return response.data.data.leads || []
     },
   })
 }
@@ -30,7 +30,7 @@ export function useLead(id: string) {
     queryKey: ["lead", id],
     queryFn: async () => {
       const response = await api.get(`/leads/${id}`)
-      return response.data
+      return response.data.data
     },
     enabled: !!id,
   })

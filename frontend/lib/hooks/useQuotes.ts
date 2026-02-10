@@ -24,7 +24,7 @@ export function useQuotes() {
     queryKey: ["quotes"],
     queryFn: async () => {
       const response = await api.get("/quotes")
-      return response.data
+      return response.data.data.quotes || []
     },
   })
 }
@@ -34,7 +34,7 @@ export function useQuote(id: string) {
     queryKey: ["quote", id],
     queryFn: async () => {
       const response = await api.get(`/quotes/${id}`)
-      return response.data
+      return response.data.data
     },
     enabled: !!id,
   })

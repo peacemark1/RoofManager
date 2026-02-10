@@ -27,7 +27,7 @@ export function useInvoices() {
     queryKey: ["invoices"],
     queryFn: async () => {
       const response = await api.get("/invoices")
-      return response.data
+      return response.data.data.invoices || []
     },
   })
 }
@@ -37,7 +37,7 @@ export function useInvoice(id: string) {
     queryKey: ["invoice", id],
     queryFn: async () => {
       const response = await api.get(`/invoices/${id}`)
-      return response.data
+      return response.data.data
     },
     enabled: !!id,
   })

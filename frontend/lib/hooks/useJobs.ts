@@ -21,7 +21,7 @@ export function useJobs() {
     queryKey: ["jobs"],
     queryFn: async () => {
       const response = await api.get("/jobs")
-      return response.data
+      return response.data.data.jobs || []
     },
   })
 }
@@ -31,7 +31,7 @@ export function useJob(id: string) {
     queryKey: ["job", id],
     queryFn: async () => {
       const response = await api.get(`/jobs/${id}`)
-      return response.data
+      return response.data.data
     },
     enabled: !!id,
   })
