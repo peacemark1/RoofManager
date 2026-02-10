@@ -178,4 +178,33 @@ async function updateEstimate(req, res) {
   }
 }
 
-module.exports = { createEstimate, getEstimate, updateEstimate };
+async function getEstimates(req, res) {
+  try {
+    const estimates = await prisma.estimate.findMany({
+      where: { companyId: req.companyId },
+      include: {
+        materials: true,
+        job: {
+          select: { title: true, address: true, jobNumber: true }
+        },
+        creator: { select: { firstName: true, lastName: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json({
+      success: true,
+      data: {
+        estimates
+      }
+    });
+  } catch (error) {
+    console.error('Get estimates error:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to fetch estimates' }
+    });
+  }
+}
+
+module.exports = { createEstimate, getEstimate, updateEstimate, getEstimates };

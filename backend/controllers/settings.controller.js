@@ -27,13 +27,20 @@ async function getNotificationPreferences(req, res) {
     }
 
     // Parse JSON fields
-    const emailNotifications = typeof user.emailNotifications === 'string' 
-      ? JSON.parse(user.emailNotifications) 
-      : user.emailNotifications || {}
-    
-    const smsNotifications = typeof user.smsNotifications === 'string'
-      ? JSON.parse(user.smsNotifications)
-      : user.smsNotifications || {}
+    let emailNotifications = {};
+    let smsNotifications = {};
+
+    try {
+      emailNotifications = typeof user.emailNotifications === 'string'
+        ? JSON.parse(user.emailNotifications)
+        : user.emailNotifications || {}
+
+      smsNotifications = typeof user.smsNotifications === 'string'
+        ? JSON.parse(user.smsNotifications)
+        : user.smsNotifications || {}
+    } catch (e) {
+      console.error('Failed to parse notification settings:', e);
+    }
 
     res.json({
       success: true,
@@ -168,7 +175,7 @@ async function shouldSendNotification(userId, type, amount = 0) {
   const emailSettings = typeof user.emailNotifications === 'string'
     ? JSON.parse(user.emailNotifications)
     : user.emailNotifications || {}
-  
+
   const smsSettings = typeof user.smsNotifications === 'string'
     ? JSON.parse(user.smsNotifications)
     : user.smsNotifications || {}
@@ -286,10 +293,10 @@ async function getNotificationPreferencesData(userId) {
 
   if (!user) return null
 
-  const emailNotifications = typeof user.emailNotifications === 'string' 
-    ? JSON.parse(user.emailNotifications) 
+  const emailNotifications = typeof user.emailNotifications === 'string'
+    ? JSON.parse(user.emailNotifications)
     : user.emailNotifications || {}
-  
+
   const smsNotifications = typeof user.smsNotifications === 'string'
     ? JSON.parse(user.smsNotifications)
     : user.smsNotifications || {}

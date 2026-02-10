@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { authenticate } = require('../middleware/auth.middleware');
-const { createEstimate, getEstimate, updateEstimate } = require('../controllers/estimate.controller');
+const { createEstimate, getEstimate, updateEstimate, getEstimates } = require('../controllers/estimate.controller');
 
 // All routes require authentication
 router.use(authenticate);
+
+// GET /api/estimates - List estimates
+router.get('/', getEstimates);
 
 // POST /api/estimates - Create estimate (with optional AI generation)
 router.post('/', createEstimate);
