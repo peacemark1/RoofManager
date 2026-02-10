@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Scheduled</title>
+</head>
+<body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #1f2937; max-width: 600px; margin: 0 auto; padding: 0; background-color: #f3f4f6;">
+  <!-- Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);">
+    <tr>
+      <td style="padding: 30px 20px; text-align: center;">
+        <div style="display: inline-block; background: white; border-radius: 50%; padding: 15px; margin-bottom: 10px;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
+        <h1 style="color: white; margin: 10px 0 0 0; font-size: 28px; font-weight: bold;">Job Scheduled!</h1>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Content -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
+    <tr>
+      <td style="padding: 40px 30px;">
+        <p style="margin-bottom: 20px;">Dear {{customerName}},</p>
+        
+        <p style="margin-bottom: 20px;">Great news! Your roofing job has been scheduled. Here are the details:</p>
+
+        <!-- Job Details -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #faf5ff; border-radius: 8px; border: 1px solid #8b5cf6; margin: 20px 0;">
+          <tr>
+            <td style="padding: 20px;">
+              <h3 style="color: #7c3aed; margin-top: 0; margin-bottom: 15px;">{{jobTitle}}</h3>
+              
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding: 10px 0; color: #6b7280; font-size: 14px; width: 40px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                  </td>
+                  <td style="padding: 10px 0; color: #1f2937; font-size: 14px;">{{jobAddress}}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; color: #6b7280; font-size: 14px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                  </td>
+                  <td style="padding: 10px 0; color: #1f2937; font-size: 14px;">
+                    <strong>{{scheduledStart}}</strong> at {{scheduledTime}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; color: #6b7280; font-size: 14px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                    </svg>
+                  </td>
+                  <td style="padding: 10px 0; color: #1f2937; font-size: 14px;">{{jobType}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- CTA Button -->
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="text-align: center; padding: 20px 0;">
+              <a href="{{actionUrl}}" style="display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                {{actionText}}
+              </a>
+            </td>
+          </tr>
+        </table>
+
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 0 8px 8px 0; margin-top: 30px;">
+          <p style="margin: 0; color: #92400e; font-size: 14px;">
+            <strong>Preparation Tips:</strong> Please ensure clear access to your property on the scheduled date. Remove any vehicles or obstacles near the work area.
+          </p>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Footer -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb;">
+    <tr>
+      <td style="padding: 20px 30px; text-align: center;">
+        <p style="color: #6b7280; font-size: 14px; margin: 0;">
+          We look forward to serving you!
+        </p>
+        <p style="color: #9ca3af; font-size: 12px; margin-top: 10px;">
+          &copy; {{companyName}}. All rights reserved.
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
