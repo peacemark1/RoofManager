@@ -53,7 +53,7 @@ async function register(req, res) {
                     country: company.country || 'US',
                     timezone: company.timezone || 'America/New_York',
                     currency: company.currency || 'USD',
-                    logoUrl: company.logoUrl || null,
+                    logo: company.logoUrl || null,
                     website: company.website || null,
                     primaryColor: company.primaryColor || '#1e40af',
                     secondaryColor: company.secondaryColor || '#3b82f6',
@@ -150,7 +150,7 @@ async function login(req, res) {
                         id: true,
                         name: true,
                         subdomain: true,
-                        logoUrl: true
+                        logo: true
                     }
                 }
             }

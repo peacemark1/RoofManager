@@ -15,11 +15,21 @@ model Company {
   id                String   @id @default(uuid())
   name              String
   subdomain         String   @unique
+  email             String?
+  phone             String?
+  address           String?
+  city              String?
+  state             String?
+  zipCode           String?
+  country           String   @default("US")
+  timezone          String   @default("America/New_York")
+  currency          String   @default("USD")
   logo              String?
+  website           String?
   primaryColor      String   @default("#1e40af")
   secondaryColor    String   @default("#3b82f6")
   font              String   @default("Inter")
-  enabledModules    String     @default("{\"ai\": true, \"payments\": true, \"chatbot\": true}")
+  enabledModules    String   @default("{\"ai\": true, \"payments\": true, \"chatbot\": true}")
   
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
