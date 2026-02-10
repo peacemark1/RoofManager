@@ -6,6 +6,9 @@ require('dotenv').config();
 
 const app = express();
 
+// Trust proxy for Railway
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(helmet());
 app.use(cors({
