@@ -17,7 +17,7 @@ async function getDashboardAnalytics(req, res) {
             where: { companyId, status: 'PAID' },
             select: { totalAmount: true }
         });
-        const totalRevenue = paidInvoices.reduce((sum, inv) => sum + Number(inv.totalAmount), 0);
+        const totalRevenue = paidInvoices.reduce((sum, inv) => sum + parseFloat(inv.totalAmount || 0), 0);
 
         // Get pipeline stages
         const leadsByStatus = await prisma.lead.groupBy({
