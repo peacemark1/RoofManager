@@ -13,6 +13,7 @@ import {
   LogOut,
   Calculator,
   Bell,
+  MessageSquare,
 } from "lucide-react"
 
 const navigation = [
@@ -20,11 +21,15 @@ const navigation = [
   { name: "Leads", href: "/leads", icon: Users },
   { name: "Jobs", href: "/jobs", icon: Briefcase },
   { name: "Estimates", href: "/estimates", icon: Calculator },
+  { name: "Quotes", href: "/quotes", icon: FileText },
   { name: "Invoices", href: "/invoices", icon: FileText },
   { name: "Payments", href: "/payments", icon: DollarSign },
-  { name: "Settings", href: "/settings", icon: Settings, children: [
-    { name: "Notifications", href: "/settings/notifications", icon: Bell },
-  ] },
+  { name: "Messages", href: "/messages", icon: MessageSquare },
+  {
+    name: "Settings", href: "/settings", icon: Settings, children: [
+      { name: "Notifications", href: "/settings/notifications", icon: Bell },
+    ]
+  },
 ]
 
 export default function Sidebar() {
