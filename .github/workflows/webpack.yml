@@ -1,4 +1,4 @@
-name: NodeJS with Webpack
+name: Frontend Build
 
 on:
   push:
@@ -22,7 +22,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Build
+    - name: Build Frontend
       run: |
+        cd frontend
         npm install
-        npx webpack
+        npm run build

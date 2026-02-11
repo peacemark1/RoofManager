@@ -540,7 +540,7 @@ export default function PublicQuotePage() {
               <CardContent className="py-6">
                 <h3 className="font-semibold mb-2">Need Help?</h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  If you have any questions about this quote, please don't hesitate to contact us.
+                  If you have any questions about this quote, please don&apos;t hesitate to contact us.
                 </p>
                 <Button
                   variant="outline"

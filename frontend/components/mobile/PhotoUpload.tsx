@@ -251,7 +251,7 @@ export default function PhotoUpload({
               <Loader2 className="h-8 w-8 animate-spin" />
             ) : (
               <>
-                <Image className="h-8 w-8" />
+                <span className="h-8 w-8" />
                 <span className="text-sm">Choose Photo</span>
               </>
             )}
