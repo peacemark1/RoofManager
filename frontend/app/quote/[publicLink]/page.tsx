@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { 
-  Check, AlertCircle, FileText, DollarSign, Calendar, 
-  Phone, Mail, MapPin, Loader2, Building 
+import {
+  Check, AlertCircle, FileText, DollarSign, Calendar,
+  Phone, Mail, MapPin, Loader2, Building
 } from "lucide-react"
 
 interface LineItem {
@@ -159,7 +160,7 @@ export default function PublicQuotePage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Company Header */}
-      <div 
+      <div
         className="bg-white shadow-md"
         style={{ borderTop: `6px solid ${quote.company.primaryColor}` }}
       >
@@ -167,13 +168,16 @@ export default function PublicQuotePage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {quote.company.logo ? (
-                <img 
-                  src={quote.company.logo} 
+                <Image
+                  src={quote.company.logo}
                   alt={quote.company.name}
-                  className="h-12"
+                  height={48}
+                  width={150}
+                  className="h-12 w-auto object-contain"
+                  unoptimized
                 />
               ) : (
-                <div 
+                <div
                   className="h-12 w-12 rounded-lg flex items-center justify-center text-white font-bold"
                   style={{ backgroundColor: quote.company.primaryColor }}
                 >
@@ -185,25 +189,25 @@ export default function PublicQuotePage() {
                 <p className="text-sm text-gray-500">Roofing & Construction Services</p>
               </div>
             </div>
-            <Badge 
+            <Badge
               className="text-sm"
-              style={{ 
-                backgroundColor: isApproved 
-                  ? '#dcfce7' 
-                  : isExpired 
-                    ? '#fee2e2' 
+              style={{
+                backgroundColor: isApproved
+                  ? '#dcfce7'
+                  : isExpired
+                    ? '#fee2e2'
                     : '#e0f2fe',
-                color: isApproved 
-                  ? '#166534' 
-                  : isExpired 
-                    ? '#991b1b' 
+                color: isApproved
+                  ? '#166534'
+                  : isExpired
+                    ? '#991b1b'
                     : '#0369a1'
               }}
             >
-              {isApproved 
-                ? '✓ Approved' 
-                : isExpired 
-                  ? 'Expired' 
+              {isApproved
+                ? '✓ Approved'
+                : isExpired
+                  ? 'Expired'
                   : quote.status}
             </Badge>
           </div>
@@ -322,7 +326,7 @@ export default function PublicQuotePage() {
                     <span className="text-gray-600">Tax</span>
                     <span>{formatCurrency(quote.tax)}</span>
                   </div>
-                  <div 
+                  <div
                     className="flex justify-between py-3 text-xl font-bold border-t mt-2"
                     style={{ color: quote.company.primaryColor }}
                   >
@@ -368,14 +372,14 @@ export default function PublicQuotePage() {
                     <label className="text-sm font-medium">
                       Your Signature <span className="text-red-500">*</span>
                     </label>
-                    <div 
+                    <div
                       className="border-2 border-dashed rounded-lg p-4 bg-gray-50"
                       style={{ minHeight: '120px' }}
                     >
                       {signatureData ? (
-                        <img 
-                          src={signatureData} 
-                          alt="Signature" 
+                        <img
+                          src={signatureData}
+                          alt="Signature"
                           className="max-h-24 mx-auto"
                         />
                       ) : (
@@ -385,8 +389,8 @@ export default function PublicQuotePage() {
                       )}
                     </div>
                     <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => {
                           // Simple signature input simulation
@@ -406,8 +410,8 @@ export default function PublicQuotePage() {
                       >
                         Generate from Name
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => setSignatureData("")}
                       >
@@ -438,12 +442,12 @@ export default function PublicQuotePage() {
                       className="mt-1"
                     />
                     <label htmlFor="agree" className="text-sm text-gray-600">
-                      I agree to the terms and conditions outlined in this quote and 
+                      I agree to the terms and conditions outlined in this quote and
                       authorize {quote.company.name} to proceed with the work.
                     </label>
                   </div>
 
-                  <Button 
+                  <Button
                     className="w-full"
                     onClick={handleSign}
                     disabled={approveMutation.isPending}
@@ -482,7 +486,7 @@ export default function PublicQuotePage() {
                   </div>
                   <div>
                     <p className="font-medium">{quote.company.name}</p>
-                    <a 
+                    <a
                       href={`https://${quote.company.subdomain}.roofmanager.com`}
                       target="_blank"
                       className="text-sm text-primary hover:underline"
@@ -508,7 +512,7 @@ export default function PublicQuotePage() {
                 {quote.job.customerEmail && (
                   <div className="flex items-center gap-3 pt-4 border-t">
                     <Mail className="h-5 w-5 text-gray-400" />
-                    <a 
+                    <a
                       href={`mailto:${quote.job.customerEmail}`}
                       className="text-primary hover:underline"
                     >
@@ -520,7 +524,7 @@ export default function PublicQuotePage() {
                 {quote.job.customerPhone && (
                   <div className="flex items-center gap-3">
                     <Phone className="h-5 w-5 text-gray-400" />
-                    <a 
+                    <a
                       href={`tel:${quote.job.customerPhone}`}
                       className="text-primary hover:underline"
                     >
@@ -538,8 +542,8 @@ export default function PublicQuotePage() {
                 <p className="text-sm text-gray-600 mb-4">
                   If you have any questions about this quote, please don't hesitate to contact us.
                 </p>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full"
                   onClick={() => window.location.href = `mailto:${quote.company.subdomain}@roofmanager.com`}
                 >

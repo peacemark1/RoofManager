@@ -73,7 +73,7 @@ export default function CustomerInvoicePage() {
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 text-center mb-4">
-              This invoice could not be found or you don't have access.
+              This invoice could not be found or you don&apos;t have access.
             </p>
             <Link href={`/customer/${token}`}>
               <Button className="w-full">Back to Dashboard</Button>
@@ -133,7 +133,7 @@ export default function CustomerInvoicePage() {
                     </p>
                   )}
                 </div>
-                <Button 
+                <Button
                   onClick={() => setShowPayment(true)}
                   className="bg-blue-600 hover:bg-blue-700"
                   size="lg"

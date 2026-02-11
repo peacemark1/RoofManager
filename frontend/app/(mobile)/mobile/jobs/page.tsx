@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { 
-  MapPin, 
-  Calendar, 
-  Users, 
-  Loader2, 
+import {
+  MapPin,
+  Calendar,
+  Users,
+  Loader2,
   RefreshCw,
   AlertCircle
 } from "lucide-react"
@@ -104,9 +104,9 @@ export default function MobileJobsPage() {
             {displayJobs.length} jobs assigned
           </p>
         </div>
-        <Button 
-          variant="outline" 
-          size="icon" 
+        <Button
+          variant="outline"
+          size="icon"
           onClick={handleRefresh}
           disabled={isRefreshing}
         >
@@ -118,7 +118,7 @@ export default function MobileJobsPage() {
       {!isOnline && (
         <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700">
           <AlertCircle className="h-5 w-5 flex-shrink-0" />
-          <p className="text-sm">You're offline. Showing cached jobs.</p>
+          <p className="text-sm">You&apos;re offline. Showing cached jobs.</p>
         </div>
       )}
 
@@ -128,7 +128,7 @@ export default function MobileJobsPage() {
           <Briefcase className="h-16 w-16 mx-auto text-gray-300 mb-4" />
           <h2 className="text-xl font-semibold text-gray-600 mb-2">No Jobs Found</h2>
           <p className="text-gray-500">
-            You don't have any active jobs assigned.
+            You don&apos;t have any active jobs assigned.
           </p>
         </div>
       ) : (

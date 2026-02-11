@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useInvoices, useCreateInvoice, Invoice } from "@/lib/hooks/useInvoices"
+import { useJobs } from "@/lib/hooks/useJobs"
 import { useQuery } from "@tanstack/react-query"
 import api from "@/lib/api"
 import { Button } from "@/components/ui/button"
@@ -37,6 +38,7 @@ export default function InvoicesPage() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
 
   const { data: invoices = [], isLoading } = useInvoices()
+  const { data: jobs = [] } = useJobs()
   const createInvoice = useCreateInvoice()
 
   const filteredInvoices = invoices.filter((invoice: Invoice) => {
@@ -62,6 +64,7 @@ export default function InvoicesPage() {
           amount: Number(formData.get("totalAmount")),
         },
       ],
+      jobId: formData.get("jobId") as string,
     }
 
     createInvoice.mutate(invoiceData)
@@ -292,6 +295,24 @@ export default function InvoicesPage() {
             </CardHeader>
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="jobId" className="text-sm font-medium">
+                    Assign to Job
+                  </label>
+                  <select
+                    id="jobId"
+                    name="jobId"
+                    required
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="">Select a job...</option>
+                    {jobs.map((job: any) => (
+                      <option key={job.id} value={job.id}>
+                        {job.jobNumber} - {job.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div className="space-y-2">
                   <label htmlFor="customerName" className="text-sm font-medium">
                     Customer Name

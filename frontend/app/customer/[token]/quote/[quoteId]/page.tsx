@@ -102,7 +102,7 @@ export default function CustomerQuotePage() {
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 text-center mb-4">
-              This quote could not be found or you don't have access.
+              This quote could not be found or you don&apos;t have access.
             </p>
             <Link href={`/customer/${token}`}>
               <Button className="w-full">Back to Dashboard</Button>
@@ -224,11 +224,11 @@ export default function CustomerQuotePage() {
                 <div className="space-y-4">
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                     <p className="text-sm text-yellow-800">
-                      <strong>Electronic Signature:</strong> By typing your name below, you agree that your 
+                      <strong>Electronic Signature:</strong> By typing your name below, you agree that your
                       electronic signature has the same legal effect as a physical signature.
                     </p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Type your full name as signature
@@ -242,7 +242,7 @@ export default function CustomerQuotePage() {
                   </div>
 
                   <div className="flex gap-3">
-                    <Button 
+                    <Button
                       onClick={handleAccept}
                       disabled={acceptMutation.isPending || !signature.trim()}
                       className="flex-1 bg-green-600 hover:bg-green-700"
@@ -259,8 +259,8 @@ export default function CustomerQuotePage() {
                         </>
                       )}
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => {
                         setShowAcceptForm(false)
                         setSignature("")

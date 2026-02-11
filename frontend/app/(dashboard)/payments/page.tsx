@@ -65,7 +65,7 @@ export default function PaymentsPage() {
     },
   })
 
-  const payments = data?.data || []
+  const payments = useMemo(() => data?.data || [], [data])
 
   // Filter payments
   const filteredPayments = useMemo(() => {
@@ -161,7 +161,7 @@ export default function PaymentsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-8 pt-6 min-h-screen bg-slate-950">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Payments</h1>
         <div className="flex gap-2">

@@ -80,7 +80,7 @@ export default function CustomerJobPage() {
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 text-center mb-4">
-              This job could not be found or you don't have access.
+              This job could not be found or you don&apos;t have access.
             </p>
             <Link href={`/customer/${token}`}>
               <Button className="w-full">Back to Dashboard</Button>
@@ -131,7 +131,7 @@ export default function CustomerJobPage() {
               <span className="text-2xl font-bold text-blue-600">{getProgressPercentage()}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-4">
-              <div 
+              <div
                 className="bg-blue-600 h-4 rounded-full transition-all duration-500"
                 style={{ width: `${getProgressPercentage()}%` }}
               />
@@ -183,9 +183,8 @@ export default function CustomerJobPage() {
                 {job.timeline.map((item: JobTimelineItem, index: number) => (
                   <div key={item.id} className="flex items-start">
                     <div className="flex flex-col items-center mr-4">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        item.completed ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
-                      }`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${item.completed ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                        }`}>
                         {item.completed ? (
                           <CheckCircle className="h-5 w-5" />
                         ) : (

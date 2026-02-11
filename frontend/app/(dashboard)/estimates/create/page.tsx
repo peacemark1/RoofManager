@@ -152,7 +152,7 @@ export default function CreateEstimatePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-8 pt-6 min-h-screen bg-slate-950">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">AI Roof Estimation</h1>
         {selectedJobId && (
@@ -379,7 +379,7 @@ export default function CreateEstimatePage() {
           </CardHeader>
           <CardContent>
             {aiEstimate ? (
-              <div className="space-y-6">
+              <div className="space-y-6 p-8 pt-6 min-h-screen bg-slate-950">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="rounded-lg bg-gray-100 p-4">
                     <p className="text-sm text-gray-500">Total Area</p>
@@ -443,7 +443,7 @@ export default function CreateEstimatePage() {
               </div>
             ) : (
               <div className="flex h-64 items-center justify-center text-gray-500">
-                Enter roof parameters and click "Generate Estimate" to see
+                Enter roof parameters and click &quot;Generate Estimate&quot; to see
                 results
               </div>
             )}

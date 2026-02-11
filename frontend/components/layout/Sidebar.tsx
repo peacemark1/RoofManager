@@ -1,8 +1,9 @@
-"use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+"use client";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Users,
@@ -14,7 +15,9 @@ import {
   Calculator,
   Bell,
   MessageSquare,
-} from "lucide-react"
+  Package,
+} from "lucide-react";
+import { useAuthStore } from "@/store/auth";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -25,82 +28,98 @@ const navigation = [
   { name: "Invoices", href: "/invoices", icon: FileText },
   { name: "Payments", href: "/payments", icon: DollarSign },
   { name: "Messages", href: "/messages", icon: MessageSquare },
+  { name: "Materials", href: "/materials", icon: Package },
   {
-    name: "Settings", href: "/settings", icon: Settings, children: [
+    name: "Settings",
+    href: "/settings",
+    icon: Settings,
+    children: [
       { name: "Notifications", href: "/settings/notifications", icon: Bell },
-    ]
+    ],
   },
-]
+];
 
 export default function Sidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const logout = useAuthStore((state) => state.logout);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   const isActive = (href: string) => {
     if (href === "/settings") {
-      return pathname.startsWith("/settings")
+      return pathname.startsWith("/settings");
     }
-    return pathname === href
-  }
+    return pathname === href;
+  };
 
   return (
-    <div className="flex h-full w-64 flex-col bg-gray-900">
-      <div className="flex h-16 items-center justify-center border-b border-gray-800">
-        <h1 className="text-xl font-bold text-white">RoofManager</h1>
+    <div className="flex h-full w-64 flex-col bg-slate-950 text-white border-r border-slate-800/50">
+      <div className="flex h-16 items-center justify-center border-b border-slate-800/50 bg-slate-950/50 backdrop-blur-lg">
+        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+          RoofManager
+        </h1>
       </div>
-      <nav className="flex-1 space-y-1 px-2 py-4">
+      <nav className="flex-1 space-y-1 px-2 py-4 overflow-y-auto">
         {navigation.map((item) => {
-          const itemActive = isActive(item.href)
+          const itemActive = isActive(item.href);
           return (
             <div key={item.name}>
               <Link
                 href={item.href}
                 className={cn(
-                  "group flex items-center rounded-md px-2 py-2 text-sm font-medium",
+                  "group flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   itemActive
-                    ? "bg-gray-800 text-white"
-                    : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                    ? "bg-slate-800/80 text-white border-l-4 border-cyan-500 shadow-md shadow-cyan-900/20"
+                    : "text-slate-400 hover:bg-slate-800/50 hover:text-white"
                 )}
               >
                 <item.icon
                   className={cn(
-                    "mr-3 h-5 w-5 flex-shrink-0",
-                    itemActive ? "text-white" : "text-gray-400 group-hover:text-white"
+                    "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
+                    itemActive ? "text-cyan-400" : "text-slate-500 group-hover:text-cyan-400"
                   )}
                 />
                 {item.name}
               </Link>
               {item.children && itemActive && (
-                <div className="ml-4 mt-1 space-y-1">
+                <div className="ml-4 mt-1 space-y-1 border-l border-slate-700 pl-2">
                   {item.children.map((child) => {
-                    const childActive = pathname === child.href
+                    const childActive = pathname === child.href;
                     return (
                       <Link
                         key={child.name}
                         href={child.href}
                         className={cn(
-                          "group flex items-center rounded-md px-2 py-1.5 text-sm font-medium",
+                          "group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-all",
                           childActive
-                            ? "bg-blue-900/50 text-blue-200"
-                            : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                            ? "text-cyan-400 bg-slate-800/30"
+                            : "text-slate-400 hover:text-white hover:bg-slate-800/30"
                         )}
                       >
                         <child.icon className="mr-3 h-4 w-4" />
                         {child.name}
                       </Link>
-                    )
+                    );
                   })}
                 </div>
               )}
             </div>
-          )
+          );
         })}
       </nav>
-      <div className="border-t border-gray-800 p-4">
-        <button className="group flex w-full items-center rounded-md px-2 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white">
-          <LogOut className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white" />
+      <div className="border-t border-slate-800 p-4 bg-slate-950/50 backdrop-blur-lg">
+        <button
+          onClick={handleLogout}
+          className="group flex w-full items-center rounded-md px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+        >
+          <LogOut className="mr-3 h-5 w-5 text-slate-500 group-hover:text-red-400" />
           Sign Out
         </button>
       </div>
     </div>
-  )
+  );
 }

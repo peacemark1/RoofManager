@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { FileText, DollarSign, Briefcase, Loader2, ExternalLink } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 interface CustomerData {
   customer: {
@@ -101,7 +102,16 @@ export default function CustomerPortalPage() {
         {/* Header */}
         <div className="text-center">
           {company.logo && (
-            <img src={company.logo} alt={company.name} className="h-16 mx-auto mb-4" />
+            <div className="relative h-16 mb-4 flex justify-center">
+              <Image
+                src={company.logo}
+                alt={company.name}
+                height={64}
+                width={200}
+                className="h-16 w-auto object-contain"
+                unoptimized
+              />
+            </div>
           )}
           <h1 className="text-3xl font-bold text-gray-900">
             Welcome, {customer.name}!
