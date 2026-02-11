@@ -3,24 +3,57 @@
 @tailwind utilities;
 
 /* ============================================
+   GHANAIAN-FRIENDLY DESIGN TOKENS
+   ============================================ */
+
+/* Color System - Ghanaian Warmth + Modern SaaS */
+:root {
+    /* Primary colors - Warm Gold/Orange (Ghanaian heritage) */
+    --color-primary: #D97706;           /* Warm Gold-Orange */
+    --color-primary-dark: #B45309;      /* Deep Orange */
+    --color-primary-light: #F59E0B;     /* Light Amber */
+    
+    /* Secondary colors - Purple (Modern SaaS) */
+    --color-secondary: #9333EA;         /* Rich Purple */
+    --color-secondary-dark: #7C3AED;    /* Deep Purple */
+    --color-secondary-light: #A855F7;   /* Light Purple */
+    
+    /* Accent colors - Emerald Green (Growth/Roof theme) */
+    --color-accent: #10B981;            /* Emerald Green */
+    --color-accent-dark: #059669;       /* Deep Green */
+    --color-accent-light: #34D399;      /* Light Green */
+    
+    /* Neutrals */
+    --color-bg-primary: #0F172A;        /* Dark Slate (Background) */
+    --color-bg-secondary: #1E293B;      /* Medium Slate */
+    --color-text-primary: #F8FAFC;      /* Off-white */
+    --color-text-secondary: #CBD5E1;    /* Light Gray */
+    --color-border: #334155;            /* Border Gray */
+    
+    /* Roof-themed accent (Terracotta) */
+    --color-roof: #EA580C;              /* Roof Terracotta */
+    --color-roof-light: #FB923C;        /* Light Terracotta */
+}
+
+/* ============================================
    CINEMATIC & GLASSMORPHISM STYLES
    ============================================ */
 
 /* Glassmorphism CSS Variables */
 :root {
-    --glass-bg-light: rgba(255, 255, 255, 0.1);
-    --glass-bg-medium: rgba(255, 255, 255, 0.15);
-    --glass-bg-dark: rgba(255, 255, 255, 0.25);
-    --glass-border-light: rgba(255, 255, 255, 0.2);
-    --glass-border-medium: rgba(255, 255, 255, 0.3);
-    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    --glass-shadow-sm: 0 4px 16px 0 rgba(31, 38, 135, 0.25);
+    --glass-bg-light: rgba(255, 255, 255, 0.05);
+    --glass-bg-medium: rgba(255, 255, 255, 0.08);
+    --glass-bg-dark: rgba(255, 255, 255, 0.12);
+    --glass-border-light: rgba(255, 255, 255, 0.12);
+    --glass-border-medium: rgba(255, 255, 255, 0.18);
+    --glass-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.6);
+    --glass-shadow-sm: 0 4px 16px 0 rgba(15, 23, 42, 0.4);
     --glass-blur: 12px;
     
-    /* Cinematic gradients */
-    --cinematic-gradient-1: radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, 0.15), transparent 60%);
-    --cinematic-gradient-2: radial-gradient(ellipse at 20% 80%, rgba(139, 92, 246, 0.1), transparent 40%);
-    --cinematic-gradient-3: radial-gradient(ellipse at 80% 20%, rgba(236, 72, 153, 0.08), transparent 40%);
+    /* Cinematic gradients - Ghanaian inspired */
+    --cinematic-gradient-1: radial-gradient(ellipse at 50% 0%, rgba(217, 119, 6, 0.12), transparent 60%);
+    --cinematic-gradient-2: radial-gradient(ellipse at 20% 80%, rgba(147, 51, 234, 0.08), transparent 40%);
+    --cinematic-gradient-3: radial-gradient(ellipse at 80% 20%, rgba(16, 185, 129, 0.06), transparent 40%);
 }
 
 .dark {

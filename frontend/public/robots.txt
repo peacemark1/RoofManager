@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /(auth)/
+Crawl-delay: 1
+
+Sitemap: https://roofmanager.com/sitemap.xml
