@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Users, AlertCircle, Roof, CheckCircle, Clock, DollarSign } from 'lucide-react';
+import { BarChart, TrendingUp, Users, AlertCircle, Roof, CheckCircle, Clock, DollarSign, FileText } from 'lucide-react';
 
 interface MetricCard {
   id: string;
