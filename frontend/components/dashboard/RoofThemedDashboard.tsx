@@ -81,12 +81,6 @@ const recentJobs = [
   },
 ];
 
-const FileText = (props: any) => (
-  <svg {...props} fill="currentColor" viewBox="0 0 20 20">
-    <path d="M4 4a2 2 0 012-2h6a1 1 0 00-.707.293l-5.414 5.414A1 1 0 004 10v6a2 2 0 002 2h8a2 2 0 002-2v-6a1 1 0 00-1-1h-6a2 2 0 01-2-2V4z" />
-  </svg>
-);
-
 export default function RoofThemedDashboard({ userName = 'User' }: RoofThemedDashboardProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
