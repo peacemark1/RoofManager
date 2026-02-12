@@ -1,0 +1,4 @@
+{
+    // Vercel access token - set via environment variable VERCEL_TOKEN
+    // Do not commit tokens directly
+}
