@@ -157,7 +157,7 @@ export default function ContactForm() {
             </span>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-              Let's discuss your{' '}
+              Let us discuss your{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-ghana-green to-teal-400">
                 roofing needs
               </span>
@@ -210,7 +210,7 @@ export default function ContactForm() {
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
                   <p className="text-slate-400 mb-6">
-                    Thank you for reaching out. We'll get back to you within 24 hours.
+                    Thank you for reaching out. We will get back to you within 24 hours.
                   </p>
                   <button
                     onClick={() => setSubmitStatus('idle')}
