@@ -2,13 +2,14 @@
 
 import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
+import Image from 'next/image';
 
 interface FeatureCardProps {
     title: string;
     description: string;
-    icon: LucideIcon;
+    icon: LucideIcon | React.ReactNode;
     index: number;
-    accentColor?: 'red' | 'gold' | 'green' | 'blue';
+    accentColor?: 'red' | 'gold' | 'green' | 'blue' | 'orange';
 }
 
 const accentColors = {
@@ -35,6 +36,12 @@ const accentColors = {
         border: 'border-blue-400/20',
         icon: 'text-blue-400',
         glow: 'shadow-blue-500/20',
+    },
+    orange: {
+        bg: 'from-orange-500/10 to-orange-600/5',
+        border: 'border-orange-400/20',
+        icon: 'text-orange-400',
+        glow: 'shadow-orange-500/20',
     },
 };
 
@@ -72,7 +79,11 @@ export default function FeatureCard({
                     transition={{ duration: 0.6 }}
                     className={`w-14 h-14 rounded-2xl glass flex items-center justify-center mb-5 ${colors.icon}`}
                 >
-                    <Icon className="w-7 h-7" />
+                    {typeof Icon === 'function' ? (
+                        <Icon className="w-7 h-7" />
+                    ) : (
+                        Icon
+                    )}
                 </motion.div>
 
                 {/* Title */}

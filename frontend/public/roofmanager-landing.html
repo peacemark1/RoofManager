@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoofManager - Roofing Business Management SaaS</title>
+    <meta name="description" content="Streamline your roofing business with RoofManager - the ultimate platform for job management, estimates, and customer relations.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            950: '#020617',
+                        },
+                        sky: {
+                            400: '#38bdf8',
+                        },
+                        indigo: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'fade-in-delay': 'fadeInUp 0.6s ease-out 0.2s forwards',
+                        'fade-in-delay-2': 'fadeInUp 0.6s ease-out 0.4s forwards',
+                        'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: #020617;
+            color: #e2e8f0;
+        }
+        
+        /* Grid Background Pattern */
+        .grid-pattern {
+            background-image: 
+                linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        /* Liquid Glass Effect */
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.1);
+        }
+        
+        .glass-light {
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.08);
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Glow Effects */
+        .glow-sky {
+            box-shadow: 0 0 40px rgba(56, 189, 248, 0.15), 0 0 80px rgba(56, 189, 248, 0.1);
+        }
+        
+        .glow-indigo {
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.15), 0 0 80px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Card Hover Effects */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(56, 189, 248, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Grid Background -->
+    <div class="fixed inset-0 grid-pattern pointer-events-none z-0"></div>
+    
+    <!-- Fixed Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center">
+                        <iconify-icon icon="solar:home-2-bold" class="text-white text-xl"></iconify-icon>
+                    </div>
+                    <span class="text-xl font-bold gradient-text">RoofManager</span>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#features" class="text-slate-300 hover:text-sky-400 transition-colors text-sm font-medium">Features</a>
+                    <a href="#pricing" class="text-slate-300 hover:text-sky-400 transition-colors text-sm font-medium">Pricing</a>
+                    <a href="#faq" class="text-slate-300 hover:text-sky-400 transition-colors text-sm font-medium">FAQ</a>
+                    <a href="#contact" class="text-slate-300 hover:text-sky-400 transition-colors text-sm font-medium">Contact</a>
+                </div>
+                
+                <!-- CTA Buttons -->
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="#" class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Sign In</a>
+                    <a href="#" class="px-5 py-2 bg-gradient-to-r from-sky-400 to-indigo-500 text-white rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-sky-400/25 transition-all">
+                        Get Started
+                    </a>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden p-2 text-slate-300 hover:text-white" aria-label="Mobile menu">
+                    <iconify-icon icon="solar:list-bold" class="text-2xl"></iconify-icon>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+        <!-- Background Glow -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-400/20 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Hero Content -->
+                <div class="text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light mb-6 animate-fade-in-up">
+                        <span class="w-2 h-2 bg-sky-400 rounded-full animate-ping-slow"></span>
+                        <span class="text-slate-300 text-sm">Now with AI-Powered Estimates</span>
+                    </div>
+                    
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in-up">
+                        <span class="text-white">Manage Your</span><br>
+                        <span class="gradient-text">Roofing Business</span><br>
+                        <span class="text-white">Like Never Before</span>
+                    </h1>
+                    
+                    <p class="text-lg sm:text-xl text-slate-400 mb-8 max-w-xl animate-fade-in-delay">
+                        Streamline operations, impress clients, and grow your revenue with the all-in-one platform designed specifically for roofing professionals.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-delay-2">
+                        <a href="#" class="px-8 py-4 bg-gradient-to-r from-sky-400 to-indigo-500 text-white rounded-xl font-semibold text-lg hover:shadow-xl hover:shadow-sky-400/25 transition-all flex items-center justify-center gap-2">
+                            Start Free Trial
+                            <iconify-icon icon="solar:arrow-right-bold"></iconify-icon>
+                        </a>
+                        <a href="#" class="px-8 py-4 glass text-white rounded-xl font-semibold text-lg hover:bg-slate-800/50 transition-all flex items-center justify-center gap-2">
+                            <iconify-icon icon="solar:play-bold"></iconify-icon>
+                            Watch Demo
+                        </a>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="flex items-center gap-8 mt-12 justify-center lg:justify-start">
+                        <div>
+                            <div class="text-3xl font-bold text-white">500+</div>
+                            <div class="text-slate-500 text-sm">Roofing Companies</div>
+                        </div>
+                        <div class="w-px h-12 bg-slate-700"></div>
+                        <div>
+                            <div class="text-3xl font-bold text-white">$50M+</div>
+                            <div class="text-slate-500 text-sm">Estimates Generated</div>
+                        </div>
+                        <div class="w-px h-12 bg-slate-700"></div>
+                        <div>
+                            <div class="text-3xl font-bold text-white">98%</div>
+                            <div class="text-slate-500 text-sm">Customer Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dashboard Preview -->
+                <div class="relative animate-float">
+                    <!-- Dashboard Container -->
+                    <div class="glass rounded-2xl p-4 glow-sky">
+                        <!-- Dashboard Header -->
+                        <div class="flex items-center justify-between mb-4 pb-4 border-b border-slate-700/50">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-400 text-sm">
+                                <iconify-icon icon="solar:user-bold"></iconify-icon>
+                                <span>John's Roofing LLC</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Dashboard Content -->
+                        <div class="grid grid-cols-3 gap-3 mb-4">
+                            <!-- Metric Cards -->
+                            <div class="glass-light rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <iconify-icon icon="solar:wallet-bold" class="text-sky-400"></iconify-icon>
+                                    <span class="text-green-400 text-xs">+12%</span>
+                                </div>
+                                <div class="text-xl font-bold text-white">$24,500</div>
+                                <div class="text-slate-500 text-xs">Revenue</div>
+                            </div>
+                            
+                            <div class="glass-light rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <iconify-icon icon="solar:document-text-bold" class="text-indigo-400"></iconify-icon>
+                                    <span class="text-sky-400 text-xs">+5</span>
+                                </div>
+                                <div class="text-xl font-bold text-white">12</div>
+                                <div class="text-slate-500 text-xs">Active Jobs</div>
+                            </div>
+                            
+                            <div class="glass-light rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <iconify-icon icon="solar:users-bold" class="text-purple-400"></iconify-icon>
+                                    <span class="text-green-400 text-xs">+3</span>
+                                </div>
+                                <div class="text-xl font-bold text-white">48</div>
+                                <div class="text-slate-500 text-xs">Leads</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart Area -->
+                        <div class="glass-light rounded-xl p-4 mb-3">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-slate-300 text-sm font-medium">Revenue Overview</span>
+                                <select class="bg-slate-800 text-slate-300 text-xs rounded px-2 py-1" aria-label="Time period">
+                                    <option>This Month</option>
+                                </select>
+                            </div>
+                            <!-- Fake Chart -->
+                            <div class="flex items-end gap-2 h-24">
+                                <div class="flex-1 bg-sky-400/30 rounded-t" style="height: 40%"></div>
+                                <div class="flex-1 bg-sky-400/40 rounded-t" style="height: 55%"></div>
+                                <div class="flex-1 bg-sky-400/50 rounded-t" style="height: 45%"></div>
+                                <div class="flex-1 bg-indigo-500/50 rounded-t" style="height: 70%"></div>
+                                <div class="flex-1 bg-indigo-500/60 rounded-t" style="height: 60%"></div>
+                                <div class="flex-1 bg-sky-400/60 rounded-t" style="height: 85%"></div>
+                                <div class="flex-1 bg-sky-400/70 rounded-t" style="height: 75%"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Jobs List -->
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-3 glass-light rounded-lg p-2">
+                                <div class="w-8 h-8 rounded bg-green-500/20 flex items-center justify-center">
+                                    <iconify-icon icon="solar:check-circle-bold" class="text-green-400 text-sm"></iconify-icon>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-white text-sm font-medium">Smith Residence</div>
+                                    <div class="text-slate-500 text-xs">Roof Replacement • $8,500</div>
+                                </div>
+                                <span class="text-slate-400 text-xs">In Progress</span>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 glass-light rounded-lg p-2">
+                                <div class="w-8 h-8 rounded bg-sky-400/20 flex items-center justify-center">
+                                    <iconify-icon icon="solar:clock-bold" class="text-sky-400 text-sm"></iconify-icon>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-white text-sm font-medium">Johnson Estate</div>
+                                    <div class="text-slate-500 text-xs">Repair Job • $2,200</div>
+                                </div>
+                                <span class="text-slate-400 text-xs">Scheduled</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating Elements -->
+                    <div class="absolute -top-4 -right-4 glass rounded-xl p-3 glow-indigo animate-ping-slow">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="solar:bell-bold" class="text-sky-400"></iconify-icon>
+                            <span class="text-white text-sm font-medium">New Lead!</span>
+                        </div>
+                    </div>
+                    
+                    <div class="absolute -bottom-4 -left-4 glass rounded-xl p-3">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="solar:document-add-bold" class="text-green-400"></iconify-icon>
+                            <span class="text-white text-sm font-medium">Estimate Sent</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Social Proof / Trust Badges -->
+    <section class="py-12 border-y border-slate-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-slate-500 text-sm mb-8">Trusted by leading roofing companies worldwide</p>
+            <div class="flex flex-wrap items-center justify-center gap-8 md:gap-16">
+                <!-- Company Logos (Text-based for now) -->
+                <div class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                    <iconify-icon icon="solar:home-bold" class="text-2xl"></iconify-icon>
+                    <span class="font-semibold">RoofPro</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                    <iconify-icon icon="solar:building-bold" class="text-2xl"></iconify-icon>
+                    <span class="font-semibold">SummitRoof</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                    <iconify-icon icon="solar:shelter-bold" class="text-2xl"></iconify-icon>
+                    <span class="font-semibold">ApexRoofing</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                    <iconify-icon icon="solar:shield-star-bold" class="text-2xl"></iconify-icon>
+                    <span class="font-semibold">GuardianRoof</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                    <iconify-icon icon="solar:crown-bold" class="text-2xl"></iconify-icon>
+                    <span class="font-semibold">RoyalRoofs</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section (Bento Grid) -->
+    <section id="features" class="py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light mb-4">
+                    <iconify-icon icon="solar:bolt-bold" class="text-sky-400"></iconify-icon>
+                    <span class="text-sky-400 text-sm font-medium">Features</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+                    <span class="text-white">Everything You Need to</span><br>
+                    <span class="gradient-text">Run Your Business</span>
+                </h2>
+                <p class="text-lg text-slate-400 max-w-2xl mx-auto">
+                    Powerful tools designed specifically for roofing contractors to save time, reduce paperwork, and increase profits.
+                </p>
+            </div>
+            
+            <!-- Bento Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Large Feature Card 1 -->
+                <div class="lg:col-span-2 glass rounded-2xl p-6 card-hover">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center mb-4">
+                        <iconify-icon icon="solar:calculator-bold" class="text-white text-xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Smart Estimates</h3>
+                    <p class="text-slate-400 mb-4">Generate professional estimates in minutes with our AI-powered calculator. Includes material costs, labor, and overhead.</p>
+                    <div class="glass-light rounded-xl p-3">
+                        <div class="flex items-center gap-3 text-sm">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-green-400"></iconify-icon>
+                            <span class="text-slate-300">Instant calculations</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-sm mt-2">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-green-400"></iconify-icon>
+                            <span class="text-slate-300">Export to PDF</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-sm mt-2">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-green-400"></iconify-icon>
+                            <span class="text-slate-300">Email directly to clients</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature Card 2 -->
+                <div class="glass rounded-2xl p-6 card-hover">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center mb-4">
+                        <iconify-icon icon="solar:calendar-bold" class="text-white text-xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Job Scheduling</h3>
+                    <p class="text-slate-400 mb-4">Drag-and-drop scheduling with crew management and automatic reminders.</p>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-1 bg-sky-400/20 text-sky-400 text-xs rounded">Calendar</span>
+                        <span class="px-2 py-1 bg-indigo-500/20 text-indigo-400 text-xs rounded">Crews</span>
+                    </div>
+                </div>
+                
+                <!-- Feature Card 3 -->
+                <div class="glass rounded-2xl p-6 card-hover">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center mb-4">
+                        <iconify-icon icon="solar:invoice-bold" class="text-white text-xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Invoicing</h3>
+                    <p class="text-slate-400 mb-4">Create and send invoices with one click. Accept payments online.</p>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-1 bg-green-400/20 text-green-400 text-xs rounded">PayStack</span>
+                        <span class="px-2 py-1 bg-sky-400/20 text-sky-400 text-xs rounded">Stripe</span>
+                    </div>
+                </div>
+                
+                <!-- Feature Card 4 -->
+                <div class="lg:col-span-2 glass rounded-2xl p-6 card-hover">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shrink-0">
+                            <iconify-icon icon="solar:people-bold" class="text-white text-xl"></iconify-icon>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Customer Portal</h3>
+                            <p class="text-slate-400 mb-4">Give your clients a dedicated portal to view quotes, approve jobs, make payments, and track progress in real-time.</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="glass-light rounded-lg p-3">
+                                    <iconify-icon icon="solar:eye-bold" class="text-sky-400 mb-1"></iconify-icon>
+                                    <div class="text-white text-sm font-medium">Live Updates</div>
+                                    <div class="text-slate-500 text-xs">Real-time notifications</div>
+                                </div>
+                                <div class="glass-light rounded-lg p-3">
+                                    <iconify-icon icon="solar:secure-bold" class="text-green-400 mb-1"></iconify-icon>
+                                    <div class="text-white text-sm font-medium">Secure Access</div>
+                                    <div class="text-slate-500 text-xs">Token-based links</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature Card 5 -->
+                <div class="glass rounded-2xl p-6 card-hover">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center mb-4">
+                        <iconify-icon icon="solar:chart-bold" class="text-white text-xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Analytics</h3>
+                    <p class="text-slate-400 mb-4">Track revenue, jobs, and customer satisfaction with beautiful dashboards.</p>
+                    <div class="h-16 bg-slate-800/50 rounded-lg flex items-end gap-1 p-2">
+                        <div class="flex-1 bg-sky-400/50 rounded-t" style="height: 60%"></div>
+                        <div class="flex-1 bg-sky-400/50 rounded-t" style="height: 80%"></div>
+                        <div class="flex-1 bg-indigo-500/50 rounded-t" style="height: 50%"></div>
+                        <div class="flex-1 bg-indigo-500/50 rounded-t" style="height: 90%"></div>
+                        <div class="flex-1 bg-sky-400/50 rounded-t" style="height: 70%"></div>
+                    </div>
+                </div>
+                
+                <!-- Feature Card 6 -->
+                <div class="glass rounded-2xl p-6 card-hover">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center mb-4">
+                        <iconify-icon icon="solar:message-bold" class="text-white text-xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">SMS Notifications</h3>
+                    <p class="text-slate-400 mb-4">Automated SMS updates for appointments, payments, and job completions.</p>
+                    <div class="glass-light rounded-lg p-3 text-sm text-slate-300">
+                        "Your roof replacement is scheduled for..."
+                    </div>
+                </div>
+                
+                <!-- Feature Card 7 -->
+                <div class="lg:col-span-2 glass rounded-2xl p-6 card-hover">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center">
+                            <iconify-icon icon="solar:material-bold" class="text-white text-xl"></iconify-icon>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Material Tracking</h3>
+                            <p class="text-slate-400">Manage inventory and track material costs per job.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="glass-light rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-white">156</div>
+                            <div class="text-slate-500 text-xs">Items in Stock</div>
+                        </div>
+                        <div class="glass-light rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-white">$12.4k</div>
+                            <div class="text-slate-500 text-xs">Material Value</div>
+                        </div>
+                        <div class="glass-light rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-white">8</div>
+                            <div class="text-slate-500 text-xs">Low Stock Alerts</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature Card 8 -->
+                <div class="lg:col-span-2 glass rounded-2xl p-6 card-hover">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0">
+                            <iconify-icon icon="solar:file-bold" class="text-white text-xl"></iconify-icon>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Document Management</h3>
+                            <p class="text-slate-400 mb-4">Store contracts, permits, and photos all in one place. Attach directly to jobs for easy access.</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-800 text-slate-300 text-sm rounded-lg">Contracts</span>
+                                <span class="px-3 py-1 bg-slate-800 text-slate-300 text-sm rounded-lg">Permits</span>
+                                <span class="px-3 py-1 bg-slate-800 text-slate-300 text-sm rounded-lg">Photos</span>
+                                <span class="px-3 py-1 bg-slate-800 text-slate-300 text-sm rounded-lg">Insurance</span>
+                                <span class="px-3 py-1 bg-slate-800 text-slate-300 text-sm rounded-lg">Warranties</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-24 relative">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl bg-gradient-to-b from-sky-400/5 to-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light mb-4">
+                    <iconify-icon icon="solar:tag-bold" class="text-sky-400"></iconify-icon>
+                    <span class="text-sky-400 text-sm font-medium">Pricing</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+                    <span class="text-white">Simple, Transparent</span><br>
+                    <span class="gradient-text">Pricing Plans</span>
+                </h2>
+                <p class="text-lg text-slate-400 max-w-2xl mx-auto">
+                    Choose the plan that fits your business. All plans include a 14-day free trial.
+                </p>
+            </div>
+            
+            <!-- Pricing Cards -->
+            <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <!-- Starter Plan -->
+                <div class="glass rounded-2xl p-6 card-hover">
+                    <div class="text-center mb-6">
+                        <h3 class="text-xl font-bold text-white mb-2">Starter</h3>
+                        <p class="text-slate-400 text-sm">Perfect for small roofing businesses</p>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <div class="text-4xl font-bold text-white mb-1">$49</div>
+                        <div class="text-slate-500 text-sm">per month</div>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-green-400"></iconify-icon>
+                            Up to 10 active jobs
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-green-400"></iconify-icon>
+                            Unlimited estimates
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-green-400"></iconify-icon>
+                            Basic scheduling
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-green-400"></iconify-icon>
+                            Email support
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-green-400"></iconify-icon>
+                            Mobile app access
+                        </li>
+                    </ul>
+                    
+                    <a href="#" class="block w-full py-3 glass-light text-white text-center rounded-xl font-medium hover:bg-sky-400/20 hover:text-sky-400 transition-all">
+                        Start Free Trial
+                    </a>
+                </div>
+                
+                <!-- Growth Plan (Featured) -->
+                <div class="glass rounded-2xl p-6 card-hover relative glow-sky">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-sky-400 to-indigo-500 rounded-full text-white text-sm font-medium">
+                        Most Popular
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <h3 class="text-xl font-bold text-white mb-2">Growth</h3>
+                        <p class="text-slate-400 text-sm">For growing roofing companies</p>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <div class="text-4xl font-bold text-white mb-1">$99</div>
+                        <div class="text-slate-500 text-sm">per month</div>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-sky-400"></iconify-icon>
+                            Unlimited active jobs
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-sky-400"></iconify-icon>
+                            AI-powered estimates
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-sky-400"></iconify-icon>
+                            Advanced scheduling
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-sky-400"></iconify-icon>
+                            Online payments
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-sky-400"></iconify-icon>
+                            Customer portal
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-sky-400"></iconify-icon>
+                            SMS notifications
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-sky-400"></iconify-icon>
+                            Analytics dashboard
+                        </li>
+                    </ul>
+                    
+                    <a href="#" class="block w-full py-3 bg-gradient-to-r from-sky-400 to-indigo-500 text-white text-center rounded-xl font-medium hover:shadow-lg hover:shadow-sky-400/25 transition-all">
+                        Start Free Trial
+                    </a>
+                </div>
+                
+                <!-- Scale Plan -->
+                <div class="glass rounded-2xl p-6 card-hover">
+                    <div class="text-center mb-6">
+                        <h3 class="text-xl font-bold text-white mb-2">Scale</h3>
+                        <p class="text-slate-400 text-sm">For large roofing enterprises</p>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <div class="text-4xl font-bold text-white mb-1">Custom</div>
+                        <div class="text-slate-500 text-sm">Contact for pricing</div>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-indigo-400"></iconify-icon>
+                            Everything in Growth
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-indigo-400"></iconify-icon>
+                            Multi-location support
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-indigo-400"></iconify-icon>
+                            API access
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-indigo-400"></iconify-icon>
+                            Custom integrations
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-indigo-400"></iconify-icon>
+                            Dedicated support
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-indigo-400"></iconify-icon>
+                            Training & onboarding
+                        </li>
+                    </ul>
+                    
+                    <a href="#" class="block w-full py-3 glass-light text-white text-center rounded-xl font-medium hover:bg-indigo-500/20 hover:text-indigo-400 transition-all">
+                        Contact Sales
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section id="faq" class="py-24">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light mb-4">
+                    <iconify-icon icon="solar:question-circle-bold" class="text-sky-400"></iconify-icon>
+                    <span class="text-sky-400 text-sm font-medium">FAQ</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+                    <span class="text-white">Frequently Asked</span><br>
+                    <span class="gradient-text">Questions</span>
+                </h2>
+            </div>
+            
+            <!-- FAQ Items -->
+            <div class="space-y-4">
+                <div class="glass rounded-xl overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between" onclick="toggleFaq(this)">
+                        <span class="text-white font-medium">How long does it take to set up RoofManager?</span>
+                        <iconify-icon icon="solar:alt-arrow-down-bold" class="text-sky-400 transition-transform"></iconify-icon>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-4">
+                       text-slate- <p class="400">Most roofing companies are up and running within 30 minutes. Simply sign up, add your company details, and start creating estimates. Our guided setup wizard will walk you through everything.</p>
+                    </div>
+                </div>
+                
+                <div class="glass rounded-xl overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between" onclick="toggleFaq(this)">
+                        <span class="text-white font-medium">Can I try RoofManager for free?</span>
+                        <iconify-icon icon="solar:alt-arrow-down-bold" class="text-sky-400 transition-transform"></iconify-icon>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-4">
+                        <p class="text-slate-400">Yes! All plans include a 14-day free trial with full access to all features. No credit card required to start your trial.</p>
+                    </div>
+                </div>
+                
+                <div class="glass rounded-xl overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between" onclick="toggleFaq(this)">
+                        <span class="text-white font-medium">What payment methods can I accept?</span>
+                        <iconify-icon icon="solar:alt-arrow-down-bold" class="text-sky-400 transition-transform"></iconify-icon>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-4">
+                        <p class="text-slate-400">RoofManager integrates with PayStack and Stripe, allowing you to accept credit cards, debit cards, bank transfers, and mobile money. All payments are processed securely.</p>
+                    </div>
+                </div>
+                
+                <div class="glass rounded-xl overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between" onclick="toggleFaq(this)">
+                        <span class="text-white font-medium">Is my data secure?</span>
+                        <iconify-icon icon="solar:alt-arrow-down-bold" class="text-sky-400 transition-transform"></iconify-icon>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-4">
+                        <p class="text-slate-400">Absolutely. We use bank-level encryption (AES-256) to protect your data. All data is backed up daily and stored in secure, SOC 2 compliant data centers.</p>
+                    </div>
+                </div>
+                
+                <div class="glass rounded-xl overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between" onclick="toggleFaq(this)">
+                        <span class="text-white font-medium">Can I use RoofManager on mobile?</span>
+                        <iconify-icon icon="solar:alt-arrow-down-bold" class="text-sky-400 transition-transform"></iconify-icon>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-4">
+                        <p class="text-slate-400">Yes! RoofManager is fully responsive and works great on smartphones and tablets. We also have native iOS and Android apps with offline capabilities for field work.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Final CTA Section -->
+    <section id="contact" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-sky-400/10 via-indigo-500/10 to-purple-500/10"></div>
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-sky-400/50 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
+        
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="glass rounded-3xl p-8 md:p-12 glow-indigo">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+                    <span class="text-white">Ready to Transform</span><br>
+                    <span class="gradient-text">Your Roofing Business?</span>
+                </h2>
+                <p class="text-lg text-slate-400 mb-8 max-w-2xl mx-auto">
+                    Join 500+ roofing companies already using RoofManager to streamline their operations and grow their business.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                    <a href="#" class="px-8 py-4 bg-gradient-to-r from-sky-400 to-indigo-500 text-white rounded-xl font-semibold text-lg hover:shadow-xl hover:shadow-sky-400/25 transition-all flex items-center justify-center gap-2">
+                        Start Free Trial
+                        <iconify-icon icon="solar:arrow-right-bold"></iconify-icon>
+                    </a>
+                    <a href="#" class="px-8 py-4 glass text-white rounded-xl font-semibold text-lg hover:bg-slate-800/50 transition-all flex items-center justify-center gap-2">
+                        <iconify-icon icon="solar:calendar-bold"></iconify-icon>
+                        Schedule Demo
+                    </a>
+                </div>
+                
+                <p class="text-slate-500 text-sm">
+                    <iconify-icon icon="solar:shield-check-bold" class="text-green-400 mr-1"></iconify-icon>
+                    No credit card required • 14-day free trial • Cancel anytime
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- Brand -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center">
+                            <iconify-icon icon="solar:home-2-bold" class="text-white text-xl"></iconify-icon>
+                        </div>
+                        <span class="text-xl font-bold gradient-text">RoofManager</span>
+                    </div>
+                    <p class="text-slate-500 text-sm mb-4">
+                        The complete roofing business management platform. Streamline operations, impress clients, and grow revenue.
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-sky-400 transition-colors">
+                            <iconify-icon icon="solar:facebook-bold"></iconify-icon>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-sky-400 transition-colors">
+                            <iconify-icon icon="solar:twitter-bold"></iconify-icon>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-sky-400 transition-colors">
+                            <iconify-icon icon="solar:instagram-bold"></iconify-icon>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-sky-400 transition-colors">
+                            <iconify-icon icon="solar:linkedin-bold"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Product -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Features</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Pricing</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Integrations</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Mobile App</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">API</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Company -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">About Us</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Careers</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Blog</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Press</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Help Center</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Documentation</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Community</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Status</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Privacy Policy</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-sky-400 transition-colors text-sm">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Bottom Bar -->
+            <div class="pt-8 border-t border-slate-800/50 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-slate-500 text-sm">
+                    © 2024 RoofManager. All rights reserved.
+                </p>
+                <div class="flex items-center gap-4 text-sm text-slate-500">
+                    <span class="flex items-center gap-1">
+                        <iconify-icon icon="solar:globe-bold"></iconify-icon>
+                        English
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <iconify-icon icon="solar:shield-check-bold" class="text-green-400"></iconify-icon>
+                        SOC 2 Compliant
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- FAQ Toggle Script -->
+    <script>
+        function toggleFaq(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('iconify-icon');
+            
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+        
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in-up');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('section > div').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

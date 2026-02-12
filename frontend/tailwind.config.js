@@ -7,6 +7,33 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Brand colors - Deep Blue and Orange
+        brand: {
+          blue: {
+            50: '#eff6ff',
+            100: '#dbeafe',
+            200: '#bfdbfe',
+            300: '#93c5fd',
+            400: '#60a5fa',
+            500: '#3b82f6',
+            600: '#2563eb',
+            700: '#1d4ed8',
+            800: '#1e40af',
+            900: '#1e3a8a', // Primary brand blue
+          },
+          orange: {
+            50: '#fff7ed',
+            100: '#ffedd5',
+            200: '#fed7aa',
+            300: '#fdba74',
+            400: '#fb923c',
+            500: '#f97316', // Primary brand orange
+            600: '#ea580c',
+            700: '#c2410c',
+            800: '#9a3412',
+            900: '#7c2d12',
+          },
+        },
         primary: {
           50: '#eff6ff',
           500: '#3b82f6',
@@ -74,6 +101,7 @@ module.exports = {
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
         'glass-cyan': '0 8px 32px rgba(6, 182, 212, 0.3)',
         'glass-cyan-lg': '0 20px 40px rgba(6, 182, 212, 0.2)',
+        'brand-orange': '0 8px 32px rgba(249, 115, 22, 0.3)',
       },
     },
   },

@@ -1,6 +1,11 @@
 export { default as LandingHeader } from './LandingHeader';
 export { default as LandingHero } from './LandingHero';
+export { default as Hero3D } from './Hero3D';
+export { default as VideoHero } from './VideoHero';
 export { default as FeaturesSection } from './FeaturesSection';
 export { default as PricingSection } from './PricingSection';
+export { default as Testimonials } from './Testimonials';
+export { default as LandingCTA } from './LandingCTA';
+export { default as TrustBadges } from './TrustBadges';
 export { default as ContactForm } from './ContactForm';
 export { default as Footer } from './Footer';

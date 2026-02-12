@@ -1,11 +1,1 @@
-{
-    "mcpServers": {
-        "skill-hub": {
-            "command": "node",
-            "args": [
-                "C:/Users/USER/roofing/scripts/skill-hub.js",
-                "C:/Users/USER/roofing/.kilocode/skills"
-            ]
-        }
-    }
-}
+{"mcpServers":{"skill-hub":{"command":"node","args":["C:/Users/USER/roofing/scripts/skill-hub.js","C:/Users/USER/roofing/.kilocode/skills"],"disabled":true,"alwaysAllow":[]}}}

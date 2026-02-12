@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" fill="none">
+  <defs>
+    <linearGradient id="skyGradient" x1="0" y1="0" x2="1920" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="50%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#F97316"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#skyGradient)"/>
+  <rect y="700" width="1920" height="380" fill="#1E3A8A"/>
+  <path d="M0 700l960 200 960-200V700H0z" fill="#1E3A8A"/>
+  <rect x="400" y="400" width="200" height="300" fill="#F97316" fill-opacity="0.3"/>
+  <rect x="700" y="350" width="250" height="350" fill="#F97316" fill-opacity="0.5"/>
+  <rect x="1000" y="420" width="180" height="280" fill="#F97316" fill-opacity="0.3"/>
+  <circle cx="200" cy="150" r="80" fill="#F97316" fill-opacity="0.2"/>
+  <circle cx="1700" cy="200" r="100" fill="#F97316" fill-opacity="0.15"/>
+  <text x="960" y="900" text-anchor="middle" fill="white" font-family="Arial" font-size="48" font-weight="bold">Professional Roofing Services</text>
+  <text x="960" y="960" text-anchor="middle" fill="#F97316" font-family="Arial" font-size="32">Quality Workmanship • Reliable Service • Affordable Pricing</text>
+</svg>

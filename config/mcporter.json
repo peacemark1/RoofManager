@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "google-stitch": {
+      "baseUrl": "https://stitch.googleapis.com/mcp",
+      "headers": {}
+    },
+    "huggingface": {
+      "serverUrl": "https://huggingface.co/mcp",
+      "headers": {}
+    }
+  },
+  "imports": []
+}
