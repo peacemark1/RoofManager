@@ -43,6 +43,8 @@ export const useAuthStore = create<AuthState>()(
           }
 
           const { user, token } = await response.json();
+          // Also store token directly for API interceptor
+          localStorage.setItem('token', token);
           set({
             user,
             token,
@@ -63,6 +65,7 @@ export const useAuthStore = create<AuthState>()(
           isLoading: false,
         });
         localStorage.removeItem('token');
+        localStorage.removeItem('auth-storage');
       },
 
       setUser: (user: User) => {

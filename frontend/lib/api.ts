@@ -13,7 +13,18 @@ api.interceptors.request.use(
   (config) => {
     // Get token from localStorage if it exists
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
+      // First check direct token key (fallback)
+      let token = localStorage.getItem('token');
+      // Also check zustand persisted storage
+      if (!token) {
+        const authData = localStorage.getItem('auth-storage');
+        if (authData) {
+          try {
+            const parsed = JSON.parse(authData);
+            token = parsed.state?.token;
+          } catch (e) {}
+        }
+      }
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

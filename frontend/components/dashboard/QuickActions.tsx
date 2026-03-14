@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   UserPlus,
@@ -17,7 +18,7 @@ interface QuickAction {
   icon: typeof UserPlus;
   variant: "red" | "gold" | "green" | "blue";
   description: string;
-  onClick: () => void;
+  href: string;
 }
 
 interface QuickActionsProps {
@@ -25,41 +26,43 @@ interface QuickActionsProps {
 }
 
 export function QuickActions({ className }: QuickActionsProps) {
+  const router = useRouter();
+
   const actions: QuickAction[] = [
     {
       label: "New Lead",
       icon: UserPlus,
       variant: "green",
       description: "Add a new potential customer",
-      onClick: () => console.log("New Lead"),
+      href: "/leads",
     },
     {
       label: "Generate Quote",
       icon: FileText,
       variant: "gold",
       description: "Create a price estimate",
-      onClick: () => console.log("Generate Quote"),
+      href: "/estimates/create",
     },
     {
       label: "Schedule Job",
       icon: Briefcase,
       variant: "blue",
       description: "Book a new installation",
-      onClick: () => console.log("Schedule Job"),
+      href: "/jobs",
     },
     {
       label: "Create Invoice",
       icon: Receipt,
       variant: "red",
       description: "Send payment request",
-      onClick: () => console.log("Create Invoice"),
+      href: "/invoices",
     },
     {
       label: "Add Material",
       icon: Package,
       variant: "green",
       description: "Update inventory",
-      onClick: () => console.log("Add Material"),
+      href: "/materials",
     },
   ];
 
@@ -116,7 +119,7 @@ export function QuickActions({ className }: QuickActionsProps) {
           return (
             <motion.button
               key={action.label}
-              onClick={action.onClick}
+              onClick={() => router.push(action.href)}
               whileHover={{ y: -4, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={cn(

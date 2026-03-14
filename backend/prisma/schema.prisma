@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -107,7 +107,13 @@ model Subscription {
   maxJobs           Int       @default(10)
   maxStorage        BigInt    @default(1073741824) // 1GB
   features          String    @default("{\"ai\": false, \"payments\": true, \"chatbot\": false}")
-  
+
+  // Trial system fields
+  trialStartDate     DateTime?
+  trialEndDate       DateTime?
+  isTrialActive      Boolean   @default(false)
+  trialUsed          Boolean   @default(false)
+
   companyId         String    @unique
   company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   
@@ -259,7 +265,16 @@ model Estimate {
   aiGenerated       Boolean  @default(false)
   aiConfidence      Float?
   notes             String?
-  
+
+  // Business estimate fields
+  installationCost   Float     @default(0)
+  transportationCost Float     @default(0)
+  discountPercent    Float     @default(0)
+  discountAmount     Float     @default(0)
+  subtotal            Float     @default(0)
+  profitMargin       Float     @default(0)
+  status              String    @default("DRAFT") // DRAFT, SENT, ACCEPTED, REJECTED
+
   jobId             String
   job               Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
   
@@ -285,10 +300,15 @@ model EstimateMaterial {
   quantity          Float
   unit              String
   estimatedCost     Float
-  
+
+  // Business pricing fields
+  buyingPrice       Float     @default(0)  // Cost to buy
+  sellingPrice      Float     @default(0) // Selling price
+  discount          Float     @default(0) // Per-item discount
+
   estimateId        String
   estimate          Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
-  
+
   @@index([estimateId])
 }
 
@@ -561,7 +581,16 @@ model TimeLog {
   endTime           DateTime?
   totalHours        Float?
   notes             String?
-  
+
+  // Business estimate fields
+  installationCost   Float     @default(0)
+  transportationCost Float     @default(0)
+  discountPercent    Float     @default(0)
+  discountAmount     Float     @default(0)
+  subtotal           Float     @default(0)
+  profitMargin       Float     @default(0)
+  status             String    @default("DRAFT") // DRAFT, SENT, ACCEPTED, REJECTED
+
   jobId             String
   job               Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
   

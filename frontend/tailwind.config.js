@@ -1,8 +1,10 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./app/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}",
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -19,7 +21,7 @@ module.exports = {
             600: '#2563eb',
             700: '#1d4ed8',
             800: '#1e40af',
-            900: '#1e3a8a', // Primary brand blue
+            900: '#1e3a8a',
           },
           orange: {
             50: '#fff7ed',
@@ -27,7 +29,7 @@ module.exports = {
             200: '#fed7aa',
             300: '#fdba74',
             400: '#fb923c',
-            500: '#f97316', // Primary brand orange
+            500: '#f97316',
             600: '#ea580c',
             700: '#c2410c',
             800: '#9a3412',
@@ -91,17 +93,44 @@ module.exports = {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
       },
+      borderRadius: {
+        '16': '16px',
+        '24': '24px',
+      },
       backdropBlur: {
-        'sm': '4px',
-        'md': '8px',
-        'lg': '12px',
-        'xl': '24px',
+        '20': '20px',
       },
       boxShadow: {
+        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+        'soft-lg': '0 10px 40px -10px rgba(0, 0, 0, 0.1)',
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
         'glass-cyan': '0 8px 32px rgba(6, 182, 212, 0.3)',
         'glass-cyan-lg': '0 20px 40px rgba(6, 182, 212, 0.2)',
         'brand-orange': '0 8px 32px rgba(249, 115, 22, 0.3)',
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-out forwards',
+        'slide-up': 'slideUp 0.5s ease-out forwards',
+        'scale-in': 'scaleIn 0.4s ease-out forwards',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '128': '32rem',
       },
     },
   },

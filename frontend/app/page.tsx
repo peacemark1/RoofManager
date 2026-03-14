@@ -71,8 +71,8 @@ export default function HomePage() {
             
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              <Link href="#" className="text-slate-300 hover:text-white transition-colors text-sm font-medium">Sign In</Link>
-              <Link href="#" className="px-5 py-2 bg-gradient-to-r from-sky-400 to-indigo-500 text-white rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-sky-400/25 transition-all">
+              <Link href="/login" className="text-slate-300 hover:text-white transition-colors text-sm font-medium">Sign In</Link>
+              <Link href="/register" className="px-5 py-2 bg-gradient-to-r from-sky-400 to-indigo-500 text-white rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-sky-400/25 transition-all">
                 Get Started
               </Link>
             </div>
@@ -103,8 +103,8 @@ export default function HomePage() {
               <a href="#faq" className="block text-slate-300 hover:text-sky-400 transition-colors">FAQ</a>
               <a href="#contact" className="block text-slate-300 hover:text-sky-400 transition-colors">Contact</a>
               <div className="pt-3 border-t border-slate-700/50 space-y-2">
-                <Link href="#" className="block text-slate-300 hover:text-white transition-colors">Sign In</Link>
-                <Link href="#" className="block w-full py-2 bg-gradient-to-r from-sky-400 to-indigo-500 text-white rounded-lg font-medium text-center">
+                <Link href="/login" className="block text-slate-300 hover:text-white transition-colors">Sign In</Link>
+                <Link href="/register" className="block w-full py-2 bg-gradient-to-r from-sky-400 to-indigo-500 text-white rounded-lg font-medium text-center">
                   Get Started
                 </Link>
               </div>
