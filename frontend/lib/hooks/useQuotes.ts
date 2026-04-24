@@ -59,7 +59,7 @@ export function useUpdateQuote() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Quote> }) => {
-      const response = await api.put(`/quotes/${id}`, data)
+      const response = await api.patch(`/quotes/${id}`, data)
       return response.data
     },
     onSuccess: () => {

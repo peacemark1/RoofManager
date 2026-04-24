@@ -29,7 +29,9 @@ router.get('/', async (req, res) => {
     const prisma = new PrismaClient();
 
     const payments = await prisma.payment.findMany({
-      where: { companyId: req.companyId },
+      where: {
+        invoice: { companyId: req.companyId }
+      },
       include: {
         invoice: {
           include: {
@@ -58,7 +60,10 @@ router.get('/:id', async (req, res) => {
     const prisma = new PrismaClient();
 
     const payment = await prisma.payment.findFirst({
-      where: { id: req.params.id, companyId: req.companyId },
+      where: {
+        id: req.params.id,
+        invoice: { companyId: req.companyId }
+      },
       include: {
         invoice: {
           include: {

@@ -44,7 +44,7 @@ async function initializePayment(req, res) {
     const reference = `INV-${invoice.id}-${Date.now()}`;
 
     // Calculate amount in smallest currency unit
-    const amountDue = invoice.totalAmount - (invoice.paidAmount || 0);
+    const amountDue = invoice.total - (invoice.amountPaid || 0);
     const currency = invoice.currency || 'USD';
 
     // Initialize payment with the detected provider
@@ -72,19 +72,11 @@ async function initializePayment(req, res) {
     // Save payment record
     await prisma.payment.create({
       data: {
-        companyId,
         invoiceId: invoice.id,
         amount: amountDue,
-        currency,
         method: provider === 'paystack' ? 'PAYSTACK' : 'STRIPE',
         status: 'pending',
         transactionId: reference,
-        metadata: {
-          provider,
-          ...(paymentResult.accessCode && { accessCode: paymentResult.accessCode }),
-          ...(paymentResult.clientSecret && { clientSecret: paymentResult.clientSecret }),
-          ...(paymentResult.paymentIntentId && { paymentIntentId: paymentResult.paymentIntentId })
-        }
       }
     });
 
@@ -118,7 +110,7 @@ async function verifyPayment(req, res) {
 
     // Find payment record
     const payment = await prisma.payment.findFirst({
-      where: { transactionId: reference, companyId },
+      where: { transactionId: reference },
       include: { invoice: true }
     });
 
@@ -129,9 +121,8 @@ async function verifyPayment(req, res) {
       });
     }
 
-    // Get provider from payment metadata
-    const provider = payment.metadata?.provider || 
-      (payment.method === 'PAYSTACK' ? 'paystack' : 'stripe');
+    // Detect provider from payment method
+    const provider = payment.method === 'PAYSTACK' ? 'paystack' : 'stripe';
 
     // Verify with payment provider
     const verification = await paymentService.verifyPayment(provider, reference);
@@ -149,12 +140,6 @@ async function verifyPayment(req, res) {
       data: {
         status: 'completed',
         paidAt: verification.paidAt ? new Date(verification.paidAt) : new Date(),
-        metadata: {
-          ...payment.metadata,
-          channel: verification.channel,
-          customerName: verification.customer?.name,
-          verificationStatus: verification.status
-        }
       }
     });
 
@@ -168,15 +153,14 @@ async function verifyPayment(req, res) {
       where: { id: payment.invoiceId }
     });
 
-    const isFullyPaid = (totalPaid._sum.amount || 0) >= invoice.totalAmount;
+    const isFullyPaid = (totalPaid._sum.amount || 0) >= invoice.total;
 
     // Update invoice status
     await prisma.invoice.update({
       where: { id: payment.invoiceId },
       data: {
-        paidAmount: totalPaid._sum.amount || payment.amount,
+        amountPaid: totalPaid._sum.amount || payment.amount,
         status: isFullyPaid ? 'paid' : invoice.status,
-        paidAt: isFullyPaid ? new Date() : null
       }
     });
 
@@ -292,11 +276,6 @@ async function handlePaymentSuccess(payload, provider, event) {
         data: {
           status: 'completed',
           paidAt: new Date(),
-          metadata: {
-            ...payment.metadata,
-            webhookProvider: provider,
-            verifiedAt: new Date().toISOString()
-          }
         }
       });
 
@@ -310,14 +289,13 @@ async function handlePaymentSuccess(payload, provider, event) {
         where: { id: payment.invoiceId }
       });
 
-      const isFullyPaid = (totalPaid._sum.amount || 0) >= invoice.totalAmount;
+      const isFullyPaid = (totalPaid._sum.amount || 0) >= invoice.total;
 
       await prisma.invoice.update({
         where: { id: payment.invoiceId },
         data: {
-          paidAmount: totalPaid._sum.amount || amount,
+          amountPaid: totalPaid._sum.amount || amount,
           status: isFullyPaid ? 'paid' : 'partial',
-          paidAt: isFullyPaid ? new Date() : null
         }
       });
 
@@ -359,12 +337,6 @@ async function handlePaymentFailed(payload, provider, event) {
         where: { id: payment.id },
         data: {
           status: 'failed',
-          metadata: {
-            ...payment.metadata,
-            webhookProvider: provider,
-            failureReason: payload.data?.gateway_response || payload.data?.last_payment_error?.message,
-            failedAt: new Date().toISOString()
-          }
         }
       });
 
@@ -409,12 +381,6 @@ async function handleRefundProcessed(payload, provider, event) {
         where: { id: payment.id },
         data: {
           status: 'refunded',
-          metadata: {
-            ...payment.metadata,
-            refundId,
-            refundAmount: amount,
-            refundedAt: new Date().toISOString()
-          }
         }
       });
 
@@ -433,8 +399,8 @@ async function handleRefundProcessed(payload, provider, event) {
       await prisma.invoice.update({
         where: { id: payment.invoiceId },
         data: {
-          paidAmount: newPaidAmount,
-          status: newPaidAmount >= invoice.totalAmount ? 'paid' : 
+          amountPaid: newPaidAmount,
+          status: newPaidAmount >= invoice.total ? 'paid' : 
             newPaidAmount > 0 ? 'partial' : 'unpaid'
         }
       });
@@ -457,7 +423,7 @@ async function processRefund(req, res) {
 
     // Find payment
     const payment = await prisma.payment.findFirst({
-      where: { id: paymentId, companyId },
+      where: { id: paymentId },
       include: { invoice: true }
     });
 
@@ -497,12 +463,6 @@ async function processRefund(req, res) {
       where: { id: payment.id },
       data: {
         status: 'refunded',
-        metadata: {
-          ...payment.metadata,
-          refundId: refundResult.refundId,
-          refundAmount,
-          refundedAt: new Date().toISOString()
-        }
       }
     });
 
@@ -520,8 +480,8 @@ async function processRefund(req, res) {
     await prisma.invoice.update({
       where: { id: payment.invoiceId },
       data: {
-        paidAmount: newPaidAmount,
-        status: newPaidAmount >= invoice.totalAmount ? 'paid' : 
+        amountPaid: newPaidAmount,
+        status: newPaidAmount >= invoice.total ? 'paid' : 
           newPaidAmount > 0 ? 'partial' : 'unpaid'
       }
     });

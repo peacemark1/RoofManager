@@ -62,7 +62,7 @@ export function useUpdateInvoice() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Invoice> }) => {
-      const response = await api.put(`/invoices/${id}`, data)
+      const response = await api.patch(`/invoices/${id}`, data)
       return response.data
     },
     onSuccess: () => {

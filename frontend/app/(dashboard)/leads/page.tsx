@@ -22,7 +22,7 @@ export default function LeadsPage() {
 
   const filteredLeads = leads.filter(
     (lead: Lead) =>
-      lead.name.toLowerCase().includes(search.toLowerCase()) ||
+      `${lead.firstName} ${lead.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
       lead.email.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -50,12 +50,12 @@ export default function LeadsPage() {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const leadData = {
-      name: formData.get("name") as string,
+      firstName: formData.get("firstName") as string,
+      lastName: formData.get("lastName") as string,
       email: formData.get("email") as string,
       phone: formData.get("phone") as string,
       address: formData.get("address") as string,
       source: formData.get("source") as string,
-      estimatedValue: Number(formData.get("estimatedValue")),
       status: editingLead?.status || "new",
       notes: formData.get("notes") as string,
     }
@@ -133,16 +133,29 @@ export default function LeadsPage() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium">
-                      Name
+                    <label htmlFor="firstName" className="text-sm font-medium">
+                      First Name
                     </label>
                     <Input
-                      id="name"
-                      name="name"
-                      defaultValue={editingLead?.name}
+                      id="firstName"
+                      name="firstName"
+                      defaultValue={editingLead?.firstName}
                       required
                     />
                   </div>
+                  <div className="space-y-2">
+                    <label htmlFor="lastName" className="text-sm font-medium">
+                      Last Name
+                    </label>
+                    <Input
+                      id="lastName"
+                      name="lastName"
+                      defaultValue={editingLead?.lastName}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium">
                       Email
@@ -189,17 +202,7 @@ export default function LeadsPage() {
                     defaultValue={editingLead?.address}
                   />
                 </div>
-                <div className="space-y-2">
-                  <label htmlFor="estimatedValue" className="text-sm font-medium">
-                    Estimated Value
-                  </label>
-                  <Input
-                    id="estimatedValue"
-                    name="estimatedValue"
-                    type="number"
-                    defaultValue={editingLead?.estimatedValue}
-                  />
-                </div>
+
                 <div className="space-y-2">
                   <label htmlFor="notes" className="text-sm font-medium">
                     Notes
@@ -232,12 +235,12 @@ export default function LeadsPage() {
 }
 
 const initialLead: Partial<Lead> = {
-  name: "",
+  firstName: "",
+  lastName: "",
   email: "",
   phone: "",
   address: "",
   source: "",
-  estimatedValue: 0,
   notes: "",
   status: "new",
 }

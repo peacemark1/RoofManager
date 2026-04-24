@@ -15,22 +15,21 @@ async function getDashboardAnalytics(req, res) {
         // Calculate revenue (paid invoices)
         const paidInvoices = await prisma.invoice.findMany({
             where: { companyId, status: 'PAID' },
-            select: { totalAmount: true }
+            select: { total: true }
         });
-        const totalRevenue = paidInvoices.reduce((sum, inv) => sum + parseFloat(inv.totalAmount || 0), 0);
+        const totalRevenue = paidInvoices.reduce((sum, inv) => sum + parseFloat(inv.total || 0), 0);
 
         // Get pipeline stages
         const leadsByStatus = await prisma.lead.groupBy({
             by: ['status'],
             where: { companyId },
             _count: { _all: true },
-            _sum: { estimatedValue: true }
         });
 
         const pipelineStages = leadsByStatus.map(s => ({
             name: s.status,
             count: s._count._all,
-            value: Number(s._sum.estimatedValue || 0)
+            value: 0
         }));
 
         // Recent activity (combined last 5 items)

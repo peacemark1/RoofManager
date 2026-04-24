@@ -88,9 +88,9 @@ export default function LeadKanban({
                   >
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between">
-                        <span className="font-medium">{lead.name}</span>
+                        <span className="font-medium">{lead.firstName} {lead.lastName}</span>
                         <Badge className={statusColors[lead.status]}>
-                          ${lead.estimatedValue.toLocaleString()}
+                          {lead.status}
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-500">{lead.email}</p>

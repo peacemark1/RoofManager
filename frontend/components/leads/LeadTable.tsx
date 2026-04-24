@@ -38,7 +38,7 @@ export default function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
             <TableHead>Contact</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Source</TableHead>
-            <TableHead>Value</TableHead>
+            <TableHead>Address</TableHead>
             <TableHead>Created</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -46,7 +46,7 @@ export default function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
         <TableBody>
           {leads.map((lead) => (
             <TableRow key={lead.id}>
-              <TableCell className="font-medium">{lead.name}</TableCell>
+              <TableCell className="font-medium">{lead.firstName} {lead.lastName}</TableCell>
               <TableCell>
                 <div>
                   <p className="text-sm">{lead.email}</p>
@@ -59,7 +59,7 @@ export default function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
                 </Badge>
               </TableCell>
               <TableCell>{lead.source}</TableCell>
-              <TableCell>${lead.estimatedValue.toLocaleString()}</TableCell>
+              <TableCell>{lead.address || '-'}</TableCell>
               <TableCell>
                 {new Date(lead.createdAt).toLocaleDateString()}
               </TableCell>
