@@ -227,6 +227,25 @@ async function processRefund(req, res) {
       data: { status: 'refunded' }
     });
 
+    const totalPaid = await prisma.payment.aggregate({
+      where: { invoiceId: payment.invoiceId, status: 'completed' },
+      _sum: { amount: true }
+    });
+
+    const newPaidAmount = Math.max(0, totalPaid._sum.amount || 0);
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: payment.invoiceId }
+    });
+
+    await prisma.invoice.update({
+      where: { id: payment.invoiceId },
+      data: {
+        amountPaid: newPaidAmount,
+        status: newPaidAmount >= (invoice?.total || 0) ? 'PAID' :
+          newPaidAmount > 0 ? 'PARTIAL' : 'SENT'
+      }
+    });
+
     res.json({
       success: true,
       data: {

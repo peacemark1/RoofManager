@@ -193,10 +193,9 @@ async function notifyQuoteReady(req, res) {
       where: { id: companyId }
     });
 
-    const sms = new (require('../services/sms.service'))();
     const message = `Hi${quote.customerName ? ' ' + quote.customerName : ''}, your quote from ${company?.name || 'RoofManager'} is ready. View it here: ${process.env.FRONTEND_URL}/quote/${quote.publicLink}`;
 
-    const result = await sms.sendSMS({ to: phone, message });
+    const result = await smsService.sendSMS({ to: phone, message });
 
     await prisma.notification.create({
       data: {
@@ -242,10 +241,9 @@ async function notifyJobComplete(req, res) {
       where: { id: companyId }
     });
 
-    const sms = new (require('../services/sms.service'))();
     const message = `Hi ${job.customerName || 'Customer'}, your job "${job.title}" has been completed by ${company?.name || 'RoofManager'}. Thank you for your business!`;
 
-    const result = await sms.sendSMS({ to: job.customer.phone, message });
+    const result = await smsService.sendSMS({ to: job.customer.phone, message });
 
     await prisma.notification.create({
       data: {
@@ -281,8 +279,7 @@ async function sendCustomSMS(req, res) {
       });
     }
 
-    const sms = new (require('../services/sms.service'))();
-    const result = await sms.sendSMS({ to, message });
+    const result = await smsService.sendSMS({ to, message });
 
     await prisma.notification.create({
       data: {
@@ -309,8 +306,7 @@ async function sendCustomSMS(req, res) {
 
 async function checkBalance(req, res) {
   try {
-    const sms = new (require('../services/sms.service'))();
-    const result = await sms.getBalance();
+    const result = await smsService.getBalance();
     res.json({ success: true, data: result });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: 'Failed to check balance' } });
@@ -320,8 +316,7 @@ async function checkBalance(req, res) {
 async function checkStatus(req, res) {
   try {
     const { messageId } = req.params;
-    const sms = new (require('../services/sms.service'))();
-    const result = await sms.checkDeliveryStatus(messageId);
+    const result = await smsService.checkDeliveryStatus(messageId);
     res.json({ success: true, data: result });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: 'Failed to check status' } });
