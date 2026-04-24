@@ -56,7 +56,7 @@ export function useUpdateJob() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Job> }) => {
-      const response = await api.put(`/jobs/${id}`, data)
+      const response = await api.patch(`/jobs/${id}`, data)
       return response.data
     },
     onSuccess: () => {

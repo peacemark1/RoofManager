@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 async function createInvoice(req, res) {
     try {
-        const { customerName, address, dueDate, totalAmount, items, jobId } = req.body;
+        const { dueDate, totalAmount, items, jobId } = req.body;
 
         // Generate invoice number
         const count = await prisma.invoice.count({
@@ -12,35 +12,28 @@ async function createInvoice(req, res) {
         const invoiceNumber = `INV-${String(count + 1).padStart(5, '0')}`;
 
         // Validate Job ID
+        let finalJobId = jobId;
         if (!jobId) {
-            // Try to find a job for this customer or create a default if absolutely necessary
-            // For now, return error if no job ID
-            // Actually, let's try to find ANY job if not provided, for testing
             const firstJob = await prisma.job.findFirst({ where: { companyId: req.companyId } });
             if (!firstJob) {
                 return res.status(400).json({ success: false, error: { message: 'No job selected and no jobs found to assign.' } });
             }
-            // Use the first job as fallback (TEMPORARY: Client should provide ID)
-            var finalJobId = firstJob.id;
-        } else {
-            var finalJobId = jobId;
+            finalJobId = firstJob.id;
         }
+
+        const totalAmountParsed = parseFloat(totalAmount);
 
         const invoice = await prisma.invoice.create({
             data: {
                 invoiceNumber,
-                customerName, // Storing denormalized for now as per schema usage in other controllers
                 dueDate: new Date(dueDate),
-                totalAmount: parseFloat(totalAmount),
                 lineItems: JSON.stringify(items),
                 status: 'draft',
-                address: address || '', // Using address field if available or empty
-                subtotal: parseFloat(totalAmount), // Assuming no tax/discount logic in frontend yet
+                subtotal: totalAmountParsed,
                 tax: 0,
-                total: parseFloat(totalAmount),
+                total: totalAmountParsed,
                 companyId: req.companyId,
                 jobId: finalJobId,
-                // customerId: ... we could link if we had it
             }
         });
 
@@ -60,13 +53,15 @@ async function createInvoice(req, res) {
 async function getInvoices(req, res) {
     try {
         const { page = 1, limit = 20 } = req.query;
-        const skip = (page - 1) * limit;
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
 
         const [invoices, total] = await Promise.all([
             prisma.invoice.findMany({
                 where: { companyId: req.companyId },
                 skip,
-                take: parseInt(limit),
+                take: limitNum,
                 orderBy: { createdAt: 'desc' },
                 include: { job: true }
             }),
@@ -85,9 +80,9 @@ async function getInvoices(req, res) {
                 invoices: parsedInvoices,
                 pagination: {
                     total,
-                    page: parseInt(page),
-                    limit: parseInt(limit),
-                    pages: Math.ceil(total / limit)
+                    page: pageNum,
+                    limit: limitNum,
+                    pages: Math.ceil(total / limitNum)
                 }
             }
         });

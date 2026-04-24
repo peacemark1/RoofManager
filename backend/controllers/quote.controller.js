@@ -66,7 +66,7 @@ async function createQuote(req, res) {
         validUntil: new Date(validUntil),
         status: 'DRAFT',
         publicLink: generatePublicLink(),
-        lineItems,
+        lineItems: JSON.stringify(lineItems),
         subtotal: totals.subtotal,
         tax: totals.tax,
         discount: discount || 0,
@@ -215,7 +215,7 @@ async function updateQuote(req, res) {
     const quote = await prisma.quote.update({
       where: { id },
       data: {
-        ...(lineItems && { lineItems }),
+        ...(lineItems && { lineItems: JSON.stringify(lineItems) }),
         ...(subtotal !== undefined && { subtotal }),
         ...(tax !== undefined && { tax }),
         ...(discount !== undefined && { discount }),

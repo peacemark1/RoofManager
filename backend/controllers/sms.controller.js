@@ -45,17 +45,12 @@ async function notifyJobAssignment(req, res) {
     await prisma.notification.create({
       data: {
         companyId,
-        userId: crewMemberId,
         type: 'sms',
         channel: 'hubtel',
+        recipient: crewMember.phone,
         subject: 'Job Assignment',
-        content: `New job: ${job.customerName} at ${job.address}`,
+        body: `New job: ${job.customerName || ''} at ${job.address}`,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          jobId
-        }
       }
     });
 
@@ -103,7 +98,7 @@ async function notifyPaymentReceived(req, res) {
     const result = await smsService.notifyPaymentReceived(
       invoice.customer,
       invoice.id,
-      amount || invoice.totalAmount
+      amount || invoice.total
     );
 
     // Log SMS
@@ -112,14 +107,10 @@ async function notifyPaymentReceived(req, res) {
         companyId,
         type: 'sms',
         channel: 'hubtel',
+        recipient: invoice.customer.phone,
         subject: 'Payment Confirmation',
-        content: `Payment received: GHS ${(amount || invoice.totalAmount).toLocaleString()}`,
+        body: `Payment received: GHS ${(amount || invoice.total).toLocaleString()}`,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          invoiceId
-        }
       }
     });
 
@@ -180,14 +171,10 @@ async function sendAppointmentReminder(req, res) {
         companyId,
         type: 'sms',
         channel: 'hubtel',
+        recipient: job.customer.phone,
         subject: 'Appointment Reminder',
-        content: `Reminder: Job scheduled for ${new Date(job.startDate).toLocaleDateString()}`,
+        body: `Reminder: Job scheduled for ${new Date(job.scheduledStart).toLocaleDateString()}`,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          jobId
-        }
       }
     });
 
@@ -248,14 +235,10 @@ async function notifyQuoteReady(req, res) {
         companyId,
         type: 'sms',
         channel: 'hubtel',
+        recipient: quote.customer.phone,
         subject: 'Quote Ready',
-        content: `Quote #${quote.quoteNumber} is ready`,
+        body: `Quote #${quote.quoteNumber} is ready`,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          quoteId
-        }
       }
     });
 
@@ -316,14 +299,10 @@ async function notifyJobComplete(req, res) {
         companyId,
         type: 'sms',
         channel: 'hubtel',
+        recipient: job.customer.phone,
         subject: 'Job Complete',
-        content: `Job at ${job.address} is complete`,
+        body: `Job at ${job.address} is complete`,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          jobId
-        }
       }
     });
 
@@ -364,14 +343,10 @@ async function sendCustomSMS(req, res) {
         companyId,
         type: 'sms',
         channel: 'hubtel',
+        recipient: to,
         subject: 'Custom Message',
-        content: message.substring(0, 100),
+        body: message.substring(0, 100),
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          recipient: to
-        }
       }
     });
 

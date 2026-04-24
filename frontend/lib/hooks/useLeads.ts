@@ -3,14 +3,14 @@ import api from "@/lib/api"
 
 export interface Lead {
   id: string
-  name: string
+  firstName: string
+  lastName: string
   email: string
   phone: string
   address: string
   status: "new" | "contacted" | "qualified" | "proposal" | "negotiation" | "won" | "lost"
   source: string
   notes: string
-  estimatedValue: number
   createdAt: string
   updatedAt: string
 }
@@ -55,7 +55,7 @@ export function useUpdateLead() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Lead> }) => {
-      const response = await api.put(`/leads/${id}`, data)
+      const response = await api.patch(`/leads/${id}`, data)
       return response.data
     },
     onSuccess: (_, variables) => {

@@ -1,11 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import api from '@/lib/api';
 
 interface User {
   id: string;
   email: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   role: string;
+  companyId: string;
 }
 
 interface AuthState {
@@ -30,20 +33,8 @@ export const useAuthStore = create<AuthState>()(
       login: async (email: string, password: string) => {
         set({ isLoading: true });
         try {
-          const response = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Login failed');
-          }
-
-          const { user, token } = await response.json();
-          // Also store token directly for API interceptor
+          const response = await api.post('/auth/login', { email, password });
+          const { user, token } = response.data.data;
           localStorage.setItem('token', token);
           set({
             user,
