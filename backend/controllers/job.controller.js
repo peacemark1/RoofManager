@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 async function createJob(req, res) {
   try {
-    const { title, description, address, propertyType, roofSize, roofPitch, latitude, longitude } = req.body;
+    const { title, description, address, propertyType, roofSize, roofPitch, latitude, longitude, scheduledStart, estimatedCost, customerName, customerEmail, customerPhone } = req.body;
 
     // Generate job number
     const year = new Date().getFullYear();
@@ -26,7 +26,12 @@ async function createJob(req, res) {
         roofPitch,
         latitude,
         longitude,
-        status: 'PROSPECT',
+        ...(scheduledStart && { scheduledStart: new Date(scheduledStart) }),
+        ...(estimatedCost !== undefined && { estimatedCost: Number(estimatedCost) }),
+        ...(customerName && { customerName }),
+        ...(customerEmail && { customerEmail }),
+        ...(customerPhone && { customerPhone }),
+        status: 'scheduled',
         companyId: req.companyId
       }
     });

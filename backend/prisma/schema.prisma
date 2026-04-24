@@ -168,7 +168,7 @@ model Job {
   latitude          Float?
   longitude         Float?
   
-  propertyType      String
+  propertyType      String?
   roofSize          Float?    // square feet
   roofPitch         String?
   status            String
