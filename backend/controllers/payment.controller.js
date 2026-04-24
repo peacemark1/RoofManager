@@ -152,6 +152,107 @@ async function verifyPayment(req, res) {
 
 async function handleWebhook(req, res) {
   try {
+    const signature = req.headers['stripe-signature'] || req.headers['x-paystack-signature'];
+    const provider = req.headers['x-paystack-signature'] ? 'paystack' : 'stripe';
+
+    const eventType = provider === 'paystack'
+      ? req.body?.event
+      : req.body?.type;
+
+    switch (eventType) {
+      case 'charge.success':
+      case 'payment_intent.succeeded': {
+        const reference = provider === 'paystack'
+          ? req.body?.data?.reference
+          : req.body?.data?.object?.metadata?.reference;
+
+        if (reference) {
+          const payment = await prisma.payment.findFirst({
+            where: { transactionId: reference },
+            include: { invoice: true }
+          });
+
+          if (payment && payment.status !== 'completed') {
+            await prisma.payment.update({
+              where: { id: payment.id },
+              data: { status: 'completed' }
+            });
+
+            const totalPaid = await prisma.payment.aggregate({
+              where: { invoiceId: payment.invoiceId, status: 'completed' },
+              _sum: { amount: true }
+            });
+
+            const newPaidAmount = totalPaid._sum.amount || 0;
+            await prisma.invoice.update({
+              where: { id: payment.invoiceId },
+              data: {
+                amountPaid: newPaidAmount,
+                status: newPaidAmount >= (payment.invoice?.total || 0) ? 'PAID' :
+                  newPaidAmount > 0 ? 'PARTIAL' : payment.invoice?.status || 'SENT'
+              }
+            });
+          }
+        }
+        break;
+      }
+
+      case 'charge.failed':
+      case 'payment_intent.payment_failed': {
+        const failRef = provider === 'paystack'
+          ? req.body?.data?.reference
+          : req.body?.data?.object?.metadata?.reference;
+
+        if (failRef) {
+          await prisma.payment.updateMany({
+            where: { transactionId: failRef },
+            data: { status: 'failed' }
+          });
+        }
+        break;
+      }
+
+      case 'refund.processed':
+      case 'charge.refund.updated': {
+        const refundRef = provider === 'paystack'
+          ? req.body?.data?.transaction_reference
+          : req.body?.data?.object?.payment_intent;
+
+        if (refundRef) {
+          const payment = await prisma.payment.findFirst({
+            where: { transactionId: refundRef },
+            include: { invoice: true }
+          });
+
+          if (payment) {
+            await prisma.payment.update({
+              where: { id: payment.id },
+              data: { status: 'refunded' }
+            });
+
+            const totalPaid = await prisma.payment.aggregate({
+              where: { invoiceId: payment.invoiceId, status: 'completed' },
+              _sum: { amount: true }
+            });
+
+            const newPaidAmount = Math.max(0, totalPaid._sum.amount || 0);
+            await prisma.invoice.update({
+              where: { id: payment.invoiceId },
+              data: {
+                amountPaid: newPaidAmount,
+                status: newPaidAmount >= (payment.invoice?.total || 0) ? 'PAID' :
+                  newPaidAmount > 0 ? 'PARTIAL' : 'SENT'
+              }
+            });
+          }
+        }
+        break;
+      }
+
+      default:
+        console.log(`Unhandled webhook event: ${eventType}`);
+    }
+
     res.json({ received: true });
   } catch (error) {
     console.error('Webhook error:', error);
