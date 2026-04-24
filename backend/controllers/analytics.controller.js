@@ -7,7 +7,7 @@ async function getDashboardAnalytics(req, res) {
 
         const [leadsCount, jobsCount, invoicesCount] = await Promise.all([
             prisma.lead.count({ where: { companyId } }),
-            prisma.job.count({ where: { companyId, status: { not: 'COMPLETED' } } }),
+            prisma.job.count({ where: { companyId, status: { not: 'completed' } } }),
             prisma.invoice.count({ where: { companyId, status: 'SENT' } })
         ]);
 

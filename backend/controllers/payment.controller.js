@@ -155,9 +155,15 @@ async function handleWebhook(req, res) {
     const signature = req.headers['stripe-signature'] || req.headers['x-paystack-signature'];
     const provider = req.headers['x-paystack-signature'] ? 'paystack' : 'stripe';
 
-    const eventType = provider === 'paystack'
-      ? req.body?.event
-      : req.body?.type;
+    const verified = provider === 'paystack'
+      ? paymentService.handlePaystackWebhook(req.body, signature)
+      : await paymentService.handleStripeWebhook(req.body, signature);
+
+    if (!verified.success) {
+      return res.status(401).json({ error: verified.error || 'Invalid webhook signature' });
+    }
+
+    const eventType = verified.type;
 
     switch (eventType) {
       case 'charge.success':
