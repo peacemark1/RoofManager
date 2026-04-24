@@ -86,7 +86,7 @@ async function createQuote(req, res) {
     // Update job status
     await prisma.job.update({
       where: { id: jobId },
-      data: { status: 'QUOTED' }
+      data: { status: 'quoted' }
     });
 
     res.status(201).json({
@@ -483,7 +483,7 @@ async function approvePublicQuote(req, res) {
     // Update job status
     await prisma.job.update({
       where: { id: quote.jobId },
-      data: { status: 'APPROVED' }
+      data: { status: 'approved' }
     });
 
     // Send notification email to admin

@@ -85,8 +85,8 @@ export default function CustomerInvoicePage() {
   }
 
   const amountDue = (invoice.total || 0) - (invoice.amountPaid || 0)
-  const isOverdue = new Date(invoice.dueDate) < new Date() && invoice.status !== 'paid'
-  const canPay = amountDue > 0 && invoice.status !== 'paid'
+  const isOverdue = new Date(invoice.dueDate) < new Date() && invoice.status.toLowerCase() !== 'paid'
+  const canPay = amountDue > 0 && invoice.status.toLowerCase() !== 'paid'
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -107,7 +107,7 @@ export default function CustomerInvoicePage() {
           </div>
           <div className="text-right">
             <Badge className={`text-lg px-4 py-1 ${getInvoiceStatusColor(invoice.status, isOverdue)}`}>
-              {isOverdue ? 'Overdue' : invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+              {isOverdue ? 'Overdue' : invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1).toLowerCase()}
             </Badge>
             {isOverdue && (
               <p className="text-red-600 text-sm mt-1">
@@ -147,7 +147,7 @@ export default function CustomerInvoicePage() {
         )}
 
         {/* Already Paid Card */}
-        {invoice.status === 'paid' && (
+        {invoice.status.toLowerCase() === 'paid' && (
           <Card className="bg-green-50 border-green-200">
             <CardContent className="py-6">
               <div className="flex items-center justify-center">
@@ -269,7 +269,7 @@ export default function CustomerInvoicePage() {
 
 function getInvoiceStatusColor(status: string, isOverdue: boolean) {
   if (isOverdue) return 'bg-red-100 text-red-800'
-  switch (status) {
+  switch (status.toLowerCase()) {
     case 'paid': return 'bg-green-100 text-green-800'
     case 'partial': return 'bg-yellow-100 text-yellow-800'
     case 'overdue': return 'bg-red-100 text-red-800'

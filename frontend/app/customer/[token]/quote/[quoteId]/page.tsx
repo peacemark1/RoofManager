@@ -201,7 +201,7 @@ export default function CustomerQuotePage() {
         </Card>
 
         {/* Accept Quote Section */}
-        {quote.status === 'sent' && !isExpired && (
+        {quote.status.toLowerCase() === 'sent' && !isExpired && (
           <Card className={showAcceptForm ? "ring-2 ring-green-500" : ""}>
             <CardHeader>
               <CardTitle className="flex items-center">
@@ -276,7 +276,7 @@ export default function CustomerQuotePage() {
         )}
 
         {/* Already Accepted Message */}
-        {quote.status === 'accepted' && (
+        {quote.status.toLowerCase() === 'approved' && (
           <Card className="bg-green-50 border-green-200">
             <CardContent className="py-6">
               <div className="flex items-center justify-center">
