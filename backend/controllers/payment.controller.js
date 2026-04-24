@@ -85,7 +85,7 @@ async function verifyPayment(req, res) {
     const { reference } = req.params;
 
     const payment = await prisma.payment.findFirst({
-      where: { transactionId: reference },
+      where: { transactionId: reference, invoice: { companyId: req.companyId } },
       include: { invoice: true }
     });
 

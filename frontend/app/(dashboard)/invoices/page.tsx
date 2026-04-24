@@ -46,7 +46,7 @@ export default function InvoicesPage() {
       (invoice.invoiceNumber || invoice.id).toLowerCase().includes(search.toLowerCase()) ||
       invoice.id.toLowerCase().includes(search.toLowerCase())
     const matchesStatus =
-      statusFilter === "all" || invoice.status === statusFilter
+      statusFilter === "all" || invoice.status.toLowerCase() === statusFilter
     return matchesSearch && matchesStatus
   })
 
@@ -87,11 +87,11 @@ export default function InvoicesPage() {
   }
 
   const totalOutstanding = filteredInvoices
-    .filter((i: Invoice) => i.status !== "paid" && i.status !== "cancelled")
+    .filter((i: Invoice) => i.status.toLowerCase() !== "paid" && i.status.toLowerCase() !== "cancelled")
     .reduce((sum: number, i: Invoice) => sum + ((i.total || 0) - (i.amountPaid || 0)), 0)
 
   const totalPaid = filteredInvoices
-    .filter((i: Invoice) => i.status === "paid")
+    .filter((i: Invoice) => i.status.toLowerCase() === "paid")
     .reduce((sum: number, i: Invoice) => sum + (i.amountPaid || 0), 0)
 
   const handlePayClick = (invoice: Invoice) => {
@@ -222,7 +222,7 @@ export default function InvoicesPage() {
                   <TableCell>${(invoice.total || 0).toLocaleString()}</TableCell>
                   <TableCell>${(invoice.amountPaid || 0).toLocaleString()}</TableCell>
                   <TableCell>
-                    <Badge className={invoiceStatusColors[invoice.status]}>
+                    <Badge className={invoiceStatusColors[invoice.status.toLowerCase()]}>
                       {invoice.status.charAt(0).toUpperCase() +
                         invoice.status.slice(1)}
                     </Badge>
@@ -242,7 +242,7 @@ export default function InvoicesPage() {
                     <Button variant="ghost" size="sm" title="Send">
                       <Send className="h-4 w-4" />
                     </Button>
-                    {(invoice.status === "sent" || invoice.status === "overdue") &&
+                    {(invoice.status.toLowerCase() === "sent" || invoice.status.toLowerCase() === "overdue") &&
                       invoice.amountPaid < invoice.total && (
                         <Button
                           variant="ghost"

@@ -94,15 +94,16 @@ export default function PaymentsPage() {
   const totals = useMemo(() => {
     return filteredPayments.reduce(
       (acc: Record<string, number>, payment: Payment) => {
-        if (payment.status === "completed") {
+        const s = payment.status.toLowerCase()
+        if (s === "completed") {
           acc.totalReceived += payment.amount
           acc.successfulCount += 1
-        } else if (payment.status === "pending") {
+        } else if (s === "pending") {
           acc.pendingAmount += payment.amount
           acc.pendingCount += 1
-        } else if (payment.status === "failed") {
+        } else if (s === "failed") {
           acc.failedCount += 1
-        } else if (payment.status === "refunded") {
+        } else if (s === "refunded") {
           acc.refundedAmount += payment.amount
           acc.refundedCount += 1
         }
@@ -334,9 +335,9 @@ export default function PaymentsPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {statusIcons[payment.status]}
-                      <Badge className={statusColors[payment.status]}>
-                        {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
+                      {statusIcons[payment.status.toLowerCase()]}
+                      <Badge className={statusColors[payment.status.toLowerCase()]}>
+                        {payment.status.charAt(0).toUpperCase() + payment.status.slice(1).toLowerCase()}
                       </Badge>
                     </div>
                   </TableCell>

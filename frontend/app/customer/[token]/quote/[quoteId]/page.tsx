@@ -63,7 +63,7 @@ export default function CustomerQuotePage() {
 
   const acceptMutation = useMutation({
     mutationFn: async (sig: string) => {
-      const response = await api.post<AcceptQuoteResponse>(`/customer/${token}/quote/${quoteId}/accept`, { signature: sig })
+      const response = await api.post<AcceptQuoteResponse>(`/customer/${token}/quote/${quoteId}/accept`, { signedBy: sig, signatureData: sig })
       return response.data
     },
     onSuccess: (data) => {

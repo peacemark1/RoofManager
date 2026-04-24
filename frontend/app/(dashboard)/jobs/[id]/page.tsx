@@ -46,9 +46,9 @@ export default function JobDetailPage() {
 
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{job.title || job.jobNumber}</h1>
-        <Badge className={statusColors[job.status]}>
+        <Badge className={statusColors[job.status.toLowerCase()]}>
           {job.status.replace("_", " ").charAt(0).toUpperCase() +
-            job.status.replace("_", " ").slice(1)}
+            job.status.replace("_", " ").slice(1).toLowerCase()}
         </Badge>
       </div>
 
@@ -94,7 +94,7 @@ export default function JobDetailPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => handleStatusChange("scheduled")}
-                disabled={job.status === "scheduled"}
+                disabled={job.status.toLowerCase() === "scheduled"}
               >
                 Schedule
               </Button>
@@ -102,7 +102,7 @@ export default function JobDetailPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => handleStatusChange("in_progress")}
-                disabled={job.status === "in_progress"}
+                disabled={job.status.toLowerCase() === "in_progress"}
               >
                 Start Job
               </Button>
@@ -110,7 +110,7 @@ export default function JobDetailPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => handleStatusChange("completed")}
-                disabled={job.status === "completed"}
+                disabled={job.status.toLowerCase() === "completed"}
               >
                 Complete
               </Button>
@@ -118,7 +118,7 @@ export default function JobDetailPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => handleStatusChange("cancelled")}
-                disabled={job.status === "cancelled"}
+                disabled={job.status.toLowerCase() === "cancelled"}
                 className="text-red-600"
               >
                 Cancel

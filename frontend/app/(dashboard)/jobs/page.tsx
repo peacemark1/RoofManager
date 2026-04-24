@@ -76,9 +76,9 @@ export default function JobsPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">{job.title || job.jobNumber}</CardTitle>
-                    <Badge className={statusColors[job.status]}>
+                    <Badge className={statusColors[job.status.toLowerCase()]}>
                       {job.status.replace("_", " ").charAt(0).toUpperCase() +
-                        job.status.replace("_", " ").slice(1)}
+                        job.status.replace("_", " ").slice(1).toLowerCase()}
                     </Badge>
                   </div>
                 </CardHeader>
