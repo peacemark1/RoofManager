@@ -14,12 +14,12 @@ import { useState } from "react"
 interface QuoteDetail {
   id: string
   quoteNumber: string
-  totalAmount: number
+  total: number
   status: string
   createdAt: string
   validUntil: string
   description?: string
-  items: QuoteItem[]
+  lineItems: QuoteItem[] | string
   customer: {
     name: string
     email: string
@@ -63,7 +63,7 @@ export default function CustomerQuotePage() {
 
   const acceptMutation = useMutation({
     mutationFn: async (sig: string) => {
-      const response = await api.post<AcceptQuoteResponse>(`/customer/${token}/quote/${quoteId}/accept`, { signature: sig })
+      const response = await api.post<AcceptQuoteResponse>(`/customer/${token}/quote/${quoteId}/accept`, { signedBy: sig, signatureData: sig })
       return response.data
     },
     onSuccess: (data) => {
@@ -178,7 +178,7 @@ export default function CustomerQuotePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {quote.items.map((item: QuoteItem) => (
+                  {(typeof quote.lineItems === 'string' ? JSON.parse(quote.lineItems) : quote.lineItems || []).map((item: QuoteItem) => (
                     <tr key={item.id}>
                       <td className="p-3">{item.description}</td>
                       <td className="p-3 text-center">{item.quantity}</td>
@@ -191,7 +191,7 @@ export default function CustomerQuotePage() {
                   <tr>
                     <td colSpan={3} className="p-3 text-right font-bold text-lg">Total Amount</td>
                     <td className="p-3 text-right font-bold text-lg text-blue-600">
-                      ${quote.totalAmount.toLocaleString()}
+                      ${(quote.total || 0).toLocaleString()}
                     </td>
                   </tr>
                 </tfoot>
@@ -201,7 +201,7 @@ export default function CustomerQuotePage() {
         </Card>
 
         {/* Accept Quote Section */}
-        {quote.status === 'sent' && !isExpired && (
+        {quote.status.toLowerCase() === 'sent' && !isExpired && (
           <Card className={showAcceptForm ? "ring-2 ring-green-500" : ""}>
             <CardHeader>
               <CardTitle className="flex items-center">
@@ -276,7 +276,7 @@ export default function CustomerQuotePage() {
         )}
 
         {/* Already Accepted Message */}
-        {quote.status === 'accepted' && (
+        {quote.status.toLowerCase() === 'approved' && (
           <Card className="bg-green-50 border-green-200">
             <CardContent className="py-6">
               <div className="flex items-center justify-center">

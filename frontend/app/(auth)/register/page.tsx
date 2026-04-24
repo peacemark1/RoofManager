@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Home, User, Building, Phone, Mail, Lock } from "lucide-react"
+import { useAuthStore } from "@/store/auth"
 
 export default function RegisterPage() {
   const [companyName, setCompanyName] = useState("")
@@ -34,7 +35,7 @@ export default function RegisterPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      const response = await fetch('/api/auth/register', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,9 +61,10 @@ export default function RegisterPage() {
         throw new Error(data.error?.message || "Registration failed")
       }
 
-      // Store the token
-      if (data.data?.token) {
-        localStorage.setItem('token', data.data.token)
+      // Store auth state
+      if (data.data?.token && data.data?.user) {
+        const login = useAuthStore.getState().login
+        await login(data.data.user, data.data.token)
       }
 
       router.push("/dashboard")

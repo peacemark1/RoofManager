@@ -3,21 +3,18 @@ import api from "@/lib/api"
 
 export interface Invoice {
   id: string
-  jobId?: string
+  invoiceNumber: string
+  jobId: string
   customerId?: string
-  customerName: string
-  customerEmail?: string
-  address: string
-  totalAmount: number
-  paidAmount: number
-  status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
-  paymentStatus?: "unpaid" | "processing" | "paid" | "refunded" | "failed"
-  currency?: string
+  total: number
+  subtotal: number
+  tax: number
+  amountPaid: number
+  status: string
   dueDate: string
-  items: {
-    description: string
-    amount: number
-  }[]
+  lineItems: string
+  items?: { description: string; quantity?: number; unitPrice?: number; total: number }[]
+  currency?: string
   createdAt: string
   updatedAt: string
 }
@@ -27,7 +24,7 @@ export function useInvoices() {
     queryKey: ["invoices"],
     queryFn: async () => {
       const response = await api.get("/invoices")
-      return response.data.data.invoices || []
+      return response.data?.data?.invoices || []
     },
   })
 }
@@ -37,7 +34,7 @@ export function useInvoice(id: string) {
     queryKey: ["invoice", id],
     queryFn: async () => {
       const response = await api.get(`/invoices/${id}`)
-      return response.data.data
+      return response.data?.data || response.data
     },
     enabled: !!id,
   })

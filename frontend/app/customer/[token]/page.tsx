@@ -30,7 +30,7 @@ interface CustomerData {
 interface Quote {
   id: string
   quoteNumber: string
-  totalAmount: number
+  total: number
   status: string
   createdAt: string
   validUntil: string
@@ -39,8 +39,8 @@ interface Quote {
 interface Invoice {
   id: string
   invoiceNumber: string
-  totalAmount: number
-  paidAmount: number
+  total: number
+  amountPaid: number
   status: string
   dueDate: string
 }
@@ -49,8 +49,8 @@ interface Job {
   id: string
   title: string
   status: string
-  startDate: string
-  scheduledEndDate?: string
+  scheduledStart?: string
+  scheduledEnd?: string
   address: string
 }
 
@@ -151,7 +151,7 @@ export default function CustomerPortalPage() {
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="font-bold text-lg">
-                          ${quote.totalAmount.toLocaleString()}
+                          ${(quote.total || 0).toLocaleString()}
                         </span>
                         <Badge className={getQuoteStatusColor(quote.status)}>
                           {quote.status.charAt(0).toUpperCase() + quote.status.slice(1)}
@@ -180,7 +180,7 @@ export default function CustomerPortalPage() {
             ) : (
               <div className="space-y-3">
                 {invoices.map((invoice: Invoice) => {
-                  const amountDue = invoice.totalAmount - invoice.paidAmount
+                  const amountDue = (invoice.total || 0) - (invoice.amountPaid || 0)
                   return (
                     <Link
                       key={invoice.id}
@@ -197,7 +197,7 @@ export default function CustomerPortalPage() {
                           <div className="text-right">
                             <p className="font-bold">${amountDue.toLocaleString()}</p>
                             <p className="text-xs text-gray-500">
-                              of ${invoice.totalAmount.toLocaleString()}
+                              of ${(invoice.total || 0).toLocaleString()}
                             </p>
                           </div>
                           <Badge className={getInvoiceStatusColor(invoice.status)}>
@@ -239,7 +239,7 @@ export default function CustomerPortalPage() {
                           {job.address}
                         </p>
                         <p className="text-sm text-gray-500">
-                          Scheduled: {new Date(job.startDate).toLocaleDateString()}
+                          Scheduled: {job.scheduledStart ? new Date(job.scheduledStart).toLocaleDateString() : 'TBD'}
                         </p>
                       </div>
                       <div className="flex items-center gap-3">

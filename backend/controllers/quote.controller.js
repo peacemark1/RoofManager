@@ -66,7 +66,7 @@ async function createQuote(req, res) {
         validUntil: new Date(validUntil),
         status: 'DRAFT',
         publicLink: generatePublicLink(),
-        lineItems,
+        lineItems: JSON.stringify(lineItems),
         subtotal: totals.subtotal,
         tax: totals.tax,
         discount: discount || 0,
@@ -86,7 +86,7 @@ async function createQuote(req, res) {
     // Update job status
     await prisma.job.update({
       where: { id: jobId },
-      data: { status: 'QUOTED' }
+      data: { status: 'quoted' }
     });
 
     res.status(201).json({
@@ -215,7 +215,7 @@ async function updateQuote(req, res) {
     const quote = await prisma.quote.update({
       where: { id },
       data: {
-        ...(lineItems && { lineItems }),
+        ...(lineItems && { lineItems: JSON.stringify(lineItems) }),
         ...(subtotal !== undefined && { subtotal }),
         ...(tax !== undefined && { tax }),
         ...(discount !== undefined && { discount }),
@@ -260,28 +260,35 @@ async function sendQuote(req, res) {
       });
     }
 
-    // Generate PDF
-    const pdfResult = await generateQuotePDF(quote, quote.company);
+    // Generate PDF (optional)
+    let pdfUrl = null;
+    try {
+      const pdfResult = await generateQuotePDF(quote, quote.company);
+      pdfUrl = pdfResult;
+    } catch (e) {
+      console.warn('PDF generation skipped:', e.message);
+    }
 
-    // Update quote with PDF URL
+    // Update quote status
     await prisma.quote.update({
       where: { id },
       data: {
-        pdfUrl: pdfResult.url,
+        ...(pdfUrl && { pdfUrl }),
         status: 'SENT'
       }
     });
 
-    // Send email
+    // Send email (non-blocking)
     const publicUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/quotes/${quote.publicLink}`;
-    await sendQuoteEmail(quote, quote.company, publicUrl);
+    sendQuoteEmail(quote, quote.company, publicUrl).catch(e => console.warn('Email send failed:', e.message));
 
     res.json({
       success: true,
       data: {
         quoteId: id,
         status: 'SENT',
-        pdfUrl: pdfResult.url,
+        pdfUrl,
+        publicUrl,
         sentAt: new Date()
       }
     });
@@ -314,19 +321,20 @@ async function generatePDF(req, res) {
       });
     }
 
-    const pdfResult = await generateQuotePDF(quote, quote.company);
+    const pdfUrl = await generateQuotePDF(quote, quote.company);
 
-    // Update quote with PDF URL
-    await prisma.quote.update({
-      where: { id },
-      data: { pdfUrl: pdfResult.url }
-    });
+    if (pdfUrl) {
+      await prisma.quote.update({
+        where: { id },
+        data: { pdfUrl }
+      });
+    }
 
     res.json({
       success: true,
       data: {
-        filename: pdfResult.filename,
-        url: pdfResult.url
+        url: pdfUrl,
+        message: pdfUrl ? 'PDF generated' : 'PDF generation not available in development mode'
       }
     });
   } catch (error) {
@@ -475,7 +483,7 @@ async function approvePublicQuote(req, res) {
     // Update job status
     await prisma.job.update({
       where: { id: quote.jobId },
-      data: { status: 'APPROVED' }
+      data: { status: 'approved' }
     });
 
     // Send notification email to admin

@@ -3,15 +3,19 @@ import api from "@/lib/api"
 
 export interface Job {
   id: string
-  leadId: string
-  customerName: string
+  jobNumber: string
+  title: string
+  description: string
   address: string
-  status: "scheduled" | "in_progress" | "completed" | "cancelled"
-  startDate: string
-  endDate: string
+  propertyType: string
+  roofSize: number
+  roofPitch: string
+  status: string
+  scheduledStart: string
+  scheduledEnd: string
   estimatedCost: number
-  finalCost: number
-  notes: string
+  actualCost: number
+  customerName: string
   createdAt: string
   updatedAt: string
 }
@@ -21,7 +25,7 @@ export function useJobs() {
     queryKey: ["jobs"],
     queryFn: async () => {
       const response = await api.get("/jobs")
-      return response.data.data.jobs || []
+      return response.data?.data?.jobs || []
     },
   })
 }
@@ -31,7 +35,7 @@ export function useJob(id: string) {
     queryKey: ["job", id],
     queryFn: async () => {
       const response = await api.get(`/jobs/${id}`)
-      return response.data.data
+      return response.data?.data || response.data
     },
     enabled: !!id,
   })
@@ -56,21 +60,7 @@ export function useUpdateJob() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Job> }) => {
-      const response = await api.put(`/jobs/${id}`, data)
-      return response.data
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["jobs"] })
-    },
-  })
-}
-
-export function useDeleteJob() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await api.delete(`/jobs/${id}`)
+      const response = await api.patch(`/jobs/${id}`, data)
       return response.data
     },
     onSuccess: () => {

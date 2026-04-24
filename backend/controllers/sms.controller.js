@@ -1,24 +1,14 @@
-/**
- * SMS Controller
- * Handles SMS notification endpoints
- */
-
 const smsService = require('../services/sms.service');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-/**
- * Send job assignment notification to crew member
- * POST /api/sms/notify-job-assignment
- */
 async function notifyJobAssignment(req, res) {
   try {
     const { jobId, crewMemberId } = req.body;
     const companyId = req.companyId;
 
     const job = await prisma.job.findFirst({
-      where: { id: jobId, companyId },
-      include: { customer: true }
+      where: { id: jobId, companyId }
     });
 
     const crewMember = await prisma.user.findFirst({
@@ -41,28 +31,20 @@ async function notifyJobAssignment(req, res) {
 
     const result = await smsService.notifyCrewAssignment(crewMember, job);
 
-    // Log SMS in database
     await prisma.notification.create({
       data: {
         companyId,
-        userId: crewMemberId,
-        type: 'sms',
-        channel: 'hubtel',
+        type: 'JOB_ASSIGNMENT',
+        channel: 'sms',
+        recipient: crewMember.phone,
         subject: 'Job Assignment',
-        content: `New job: ${job.customerName} at ${job.address}`,
+        body: `New job: ${job.customerName || job.title} at ${job.address}`,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          jobId
-        }
+        sentAt: result.success ? new Date() : null
       }
     });
 
-    res.json({
-      success: result.success,
-      data: result
-    });
+    res.json({ success: result.success, data: result });
   } catch (error) {
     console.error('Job notification error:', error);
     res.status(500).json({
@@ -72,10 +54,6 @@ async function notifyJobAssignment(req, res) {
   }
 }
 
-/**
- * Send payment confirmation to customer
- * POST /api/sms/notify-payment
- */
 async function notifyPaymentReceived(req, res) {
   try {
     const { invoiceId, amount } = req.body;
@@ -103,30 +81,23 @@ async function notifyPaymentReceived(req, res) {
     const result = await smsService.notifyPaymentReceived(
       invoice.customer,
       invoice.id,
-      amount || invoice.totalAmount
+      amount || invoice.total
     );
 
-    // Log SMS
     await prisma.notification.create({
       data: {
         companyId,
-        type: 'sms',
-        channel: 'hubtel',
+        type: 'PAYMENT_RECEIVED',
+        channel: 'sms',
+        recipient: invoice.customer.phone,
         subject: 'Payment Confirmation',
-        content: `Payment received: GHS ${(amount || invoice.totalAmount).toLocaleString()}`,
+        body: `Payment received: GHS ${(amount || invoice.total).toLocaleString()}`,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          invoiceId
-        }
+        sentAt: result.success ? new Date() : null
       }
     });
 
-    res.json({
-      success: result.success,
-      data: result
-    });
+    res.json({ success: result.success, data: result });
   } catch (error) {
     console.error('Payment notification error:', error);
     res.status(500).json({
@@ -136,10 +107,6 @@ async function notifyPaymentReceived(req, res) {
   }
 }
 
-/**
- * Send appointment reminder to customer
- * POST /api/sms/send-reminder
- */
 async function sendAppointmentReminder(req, res) {
   try {
     const { jobId } = req.body;
@@ -174,27 +141,20 @@ async function sendAppointmentReminder(req, res) {
       company?.name || 'RoofManager'
     );
 
-    // Log SMS
     await prisma.notification.create({
       data: {
         companyId,
-        type: 'sms',
-        channel: 'hubtel',
+        type: 'APPOINTMENT_REMINDER',
+        channel: 'sms',
+        recipient: job.customer.phone,
         subject: 'Appointment Reminder',
-        content: `Reminder: Job scheduled for ${new Date(job.startDate).toLocaleDateString()}`,
+        body: `Reminder: Job scheduled for ${job.scheduledStart ? new Date(job.scheduledStart).toLocaleDateString() : 'TBD'}`,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          jobId
-        }
+        sentAt: result.success ? new Date() : null
       }
     });
 
-    res.json({
-      success: result.success,
-      data: result
-    });
+    res.json({ success: result.success, data: result });
   } catch (error) {
     console.error('Reminder error:', error);
     res.status(500).json({
@@ -204,10 +164,6 @@ async function sendAppointmentReminder(req, res) {
   }
 }
 
-/**
- * Send quote ready notification
- * POST /api/sms/notify-quote
- */
 async function notifyQuoteReady(req, res) {
   try {
     const { quoteId } = req.body;
@@ -215,7 +171,7 @@ async function notifyQuoteReady(req, res) {
 
     const quote = await prisma.quote.findFirst({
       where: { id: quoteId, companyId },
-      include: { customer: true }
+      include: { customer: true, job: true }
     });
 
     if (!quote) {
@@ -225,10 +181,11 @@ async function notifyQuoteReady(req, res) {
       });
     }
 
-    if (!quote.customer?.phone) {
+    const phone = quote.customer?.phone || quote.customerPhone;
+    if (!phone) {
       return res.status(400).json({
         success: false,
-        error: { message: 'Customer has no phone number' }
+        error: { message: 'No phone number for customer' }
       });
     }
 
@@ -236,33 +193,24 @@ async function notifyQuoteReady(req, res) {
       where: { id: companyId }
     });
 
-    const result = await smsService.notifyQuoteReady(
-      quote.customer,
-      quote,
-      company?.name || 'RoofManager'
-    );
+    const message = `Hi${quote.customerName ? ' ' + quote.customerName : ''}, your quote from ${company?.name || 'RoofManager'} is ready. View it here: ${process.env.FRONTEND_URL}/quote/${quote.publicLink}`;
 
-    // Log SMS
+    const result = await smsService.sendSMS({ to: phone, message });
+
     await prisma.notification.create({
       data: {
         companyId,
-        type: 'sms',
-        channel: 'hubtel',
+        type: 'QUOTE_READY',
+        channel: 'sms',
+        recipient: phone,
         subject: 'Quote Ready',
-        content: `Quote #${quote.quoteNumber} is ready`,
+        body: message,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          quoteId
-        }
+        sentAt: result.success ? new Date() : null
       }
     });
 
-    res.json({
-      success: result.success,
-      data: result
-    });
+    res.json({ success: result.success, data: result });
   } catch (error) {
     console.error('Quote notification error:', error);
     res.status(500).json({
@@ -272,10 +220,6 @@ async function notifyQuoteReady(req, res) {
   }
 }
 
-/**
- * Send job completion notification
- * POST /api/sms/notify-complete
- */
 async function notifyJobComplete(req, res) {
   try {
     const { jobId } = req.body;
@@ -286,17 +230,10 @@ async function notifyJobComplete(req, res) {
       include: { customer: true }
     });
 
-    if (!job) {
+    if (!job || !job.customer?.phone) {
       return res.status(400).json({
         success: false,
-        error: { message: 'Job not found' }
-      });
-    }
-
-    if (!job.customer?.phone) {
-      return res.status(400).json({
-        success: false,
-        error: { message: 'Customer has no phone number' }
+        error: { message: 'Job not found or customer has no phone' }
       });
     }
 
@@ -304,35 +241,26 @@ async function notifyJobComplete(req, res) {
       where: { id: companyId }
     });
 
-    const result = await smsService.notifyJobComplete(
-      job.customer,
-      job,
-      company?.name || 'RoofManager'
-    );
+    const message = `Hi ${job.customerName || 'Customer'}, your job "${job.title}" has been completed by ${company?.name || 'RoofManager'}. Thank you for your business!`;
 
-    // Log SMS
+    const result = await smsService.sendSMS({ to: job.customer.phone, message });
+
     await prisma.notification.create({
       data: {
         companyId,
-        type: 'sms',
-        channel: 'hubtel',
-        subject: 'Job Complete',
-        content: `Job at ${job.address} is complete`,
+        type: 'JOB_COMPLETE',
+        channel: 'sms',
+        recipient: job.customer.phone,
+        subject: 'Job Completed',
+        body: message,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          jobId
-        }
+        sentAt: result.success ? new Date() : null
       }
     });
 
-    res.json({
-      success: result.success,
-      data: result
-    });
+    res.json({ success: result.success, data: result });
   } catch (error) {
-    console.error('Completion notification error:', error);
+    console.error('Job complete notification error:', error);
     res.status(500).json({
       success: false,
       error: { message: 'Failed to send notification' }
@@ -340,14 +268,9 @@ async function notifyJobComplete(req, res) {
   }
 }
 
-/**
- * Send custom SMS
- * POST /api/sms/send
- */
 async function sendCustomSMS(req, res) {
   try {
     const { to, message } = req.body;
-    const companyId = req.companyId;
 
     if (!to || !message) {
       return res.status(400).json({
@@ -358,27 +281,20 @@ async function sendCustomSMS(req, res) {
 
     const result = await smsService.sendSMS({ to, message });
 
-    // Log SMS
     await prisma.notification.create({
       data: {
-        companyId,
-        type: 'sms',
-        channel: 'hubtel',
-        subject: 'Custom Message',
-        content: message.substring(0, 100),
+        companyId: req.companyId,
+        type: 'CUSTOM_SMS',
+        channel: 'sms',
+        recipient: to,
+        subject: 'Custom SMS',
+        body: message,
         status: result.success ? 'sent' : 'failed',
-        metadata: {
-          messageId: result.messageId,
-          cost: result.cost,
-          recipient: to
-        }
+        sentAt: result.success ? new Date() : null
       }
     });
 
-    res.json({
-      success: result.success,
-      data: result
-    });
+    res.json({ success: result.success, data: result });
   } catch (error) {
     console.error('Custom SMS error:', error);
     res.status(500).json({
@@ -388,38 +304,22 @@ async function sendCustomSMS(req, res) {
   }
 }
 
-/**
- * Check SMS balance
- * GET /api/sms/balance
- */
 async function checkBalance(req, res) {
   try {
-    const balance = await smsService.getBalance();
-    res.json(balance);
+    const result = await smsService.getBalance();
+    res.json({ success: true, data: result });
   } catch (error) {
-    console.error('Balance check error:', error);
-    res.status(500).json({
-      success: false,
-      error: { message: 'Failed to check balance' }
-    });
+    res.status(500).json({ success: false, error: { message: 'Failed to check balance' } });
   }
 }
 
-/**
- * Check message delivery status
- * GET /api/sms/status/:messageId
- */
 async function checkStatus(req, res) {
   try {
     const { messageId } = req.params;
-    const status = await smsService.checkDeliveryStatus(messageId);
-    res.json(status);
+    const result = await smsService.checkDeliveryStatus(messageId);
+    res.json({ success: true, data: result });
   } catch (error) {
-    console.error('Status check error:', error);
-    res.status(500).json({
-      success: false,
-      error: { message: 'Failed to check status' }
-    });
+    res.status(500).json({ success: false, error: { message: 'Failed to check status' } });
   }
 }
 

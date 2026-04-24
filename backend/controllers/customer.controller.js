@@ -1,22 +1,12 @@
-/**
- * Customer Controller
- * Handles public customer portal access via secure tokens
- */
-
 const crypto = require('crypto');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-/**
- * Generate secure access link for customer
- * POST /api/customer/generate-link
- */
 async function generateAccessLink(req, res) {
   try {
     const { email, customerId } = req.body;
     const companyId = req.companyId;
 
-    // Find customer
     let customer = await prisma.customer.findFirst({
       where: customerId ? { id: customerId, companyId } : { email, companyId }
     });
@@ -28,16 +18,15 @@ async function generateAccessLink(req, res) {
       });
     }
 
-    // Check if token needs regeneration
-    const needsNewToken = !customer.accessToken || 
-      new Date() > new Date(customer.tokenExpiresAt);
+    const needsNewToken = !customer.accessToken ||
+      !customer.tokenExpiresAt || new Date() > new Date(customer.tokenExpiresAt);
 
     if (needsNewToken) {
       customer = await prisma.customer.update({
         where: { id: customer.id },
         data: {
           accessToken: crypto.randomUUID(),
-          tokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+          tokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         }
       });
     }
@@ -61,10 +50,6 @@ async function generateAccessLink(req, res) {
   }
 }
 
-/**
- * Get customer portal data by token
- * GET /api/customer/:token
- */
 async function getCustomerData(req, res) {
   try {
     const { token } = req.params;
@@ -75,21 +60,12 @@ async function getCustomerData(req, res) {
         tokenExpiresAt: { gte: new Date() }
       },
       include: {
-        quotes: {
-          orderBy: { createdAt: 'desc' },
-          include: {
-            items: true
-          }
-        },
+        quotes: { orderBy: { createdAt: 'desc' } },
         invoices: {
           orderBy: { createdAt: 'desc' },
-          include: {
-            payments: true
-          }
+          include: { payments: true }
         },
-        jobs: {
-          orderBy: { createdAt: 'desc' }
-        }
+        jobs: { orderBy: { createdAt: 'desc' } }
       }
     });
 
@@ -100,7 +76,6 @@ async function getCustomerData(req, res) {
       });
     }
 
-    // Get company info
     const company = await prisma.company.findUnique({
       where: { id: customer.companyId }
     });
@@ -122,17 +97,17 @@ async function getCustomerData(req, res) {
         quotes: customer.quotes.map(q => ({
           id: q.id,
           quoteNumber: q.quoteNumber,
-          totalAmount: q.totalAmount,
+          total: q.total,
           status: q.status,
           createdAt: q.createdAt,
           validUntil: q.validUntil,
-          items: q.items
+          lineItems: typeof q.lineItems === 'string' ? JSON.parse(q.lineItems) : q.lineItems
         })),
         invoices: customer.invoices.map(i => ({
           id: i.id,
-          invoiceNumber: i.invoiceNumber || i.id.slice(0, 8),
-          totalAmount: i.totalAmount,
-          paidAmount: i.paidAmount,
+          invoiceNumber: i.invoiceNumber,
+          total: i.total,
+          amountPaid: i.amountPaid,
           status: i.status,
           dueDate: i.dueDate,
           createdAt: i.createdAt,
@@ -142,8 +117,8 @@ async function getCustomerData(req, res) {
           id: j.id,
           title: j.title,
           status: j.status,
-          startDate: j.startDate,
-          scheduledEndDate: j.scheduledEndDate,
+          scheduledStart: j.scheduledStart,
+          scheduledEnd: j.scheduledEnd,
           address: j.address
         }))
       }
@@ -157,15 +132,10 @@ async function getCustomerData(req, res) {
   }
 }
 
-/**
- * Get quote detail for customer
- * GET /api/customer/:token/quote/:quoteId
- */
 async function getQuoteDetail(req, res) {
   try {
     const { token, quoteId } = req.params;
 
-    // Verify customer token
     const customer = await prisma.customer.findFirst({
       where: {
         accessToken: token,
@@ -181,14 +151,8 @@ async function getQuoteDetail(req, res) {
     }
 
     const quote = await prisma.quote.findFirst({
-      where: {
-        id: quoteId,
-        customerId: customer.id
-      },
-      include: {
-        items: true,
-        company: true
-      }
+      where: { id: quoteId, customerId: customer.id },
+      include: { company: true }
     });
 
     if (!quote) {
@@ -204,21 +168,18 @@ async function getQuoteDetail(req, res) {
         quote: {
           id: quote.id,
           quoteNumber: quote.quoteNumber,
-          totalAmount: quote.totalAmount,
+          total: quote.total,
+          subtotal: quote.subtotal,
+          tax: quote.tax,
+          discount: quote.discount,
           status: quote.status,
-          createdAt: quote.createdAt,
           validUntil: quote.validUntil,
           notes: quote.notes,
-          items: quote.items,
-          customer: {
-            name: customer.name,
-            email: customer.email,
-            phone: customer.phone
-          },
+          termsAndConditions: quote.termsAndConditions,
+          lineItems: typeof quote.lineItems === 'string' ? JSON.parse(quote.lineItems) : quote.lineItems,
           company: {
-            name: quote.company?.name || 'RoofManager',
-            phone: quote.company?.phone,
-            email: quote.company?.email
+            name: quote.company.name,
+            logo: quote.company.logo
           }
         }
       }
@@ -232,16 +193,11 @@ async function getQuoteDetail(req, res) {
   }
 }
 
-/**
- * Accept quote (with optional e-signature)
- * POST /api/customer/:token/quote/:quoteId/accept
- */
 async function acceptQuote(req, res) {
   try {
     const { token, quoteId } = req.params;
-    const { signature, signatureData } = req.body;
+    const { signedBy, signatureData } = req.body;
 
-    // Verify customer token
     const customer = await prisma.customer.findFirst({
       where: {
         accessToken: token,
@@ -257,10 +213,7 @@ async function acceptQuote(req, res) {
     }
 
     const quote = await prisma.quote.findFirst({
-      where: {
-        id: quoteId,
-        customerId: customer.id
-      }
+      where: { id: quoteId, customerId: customer.id }
     });
 
     if (!quote) {
@@ -270,57 +223,32 @@ async function acceptQuote(req, res) {
       });
     }
 
-    if (quote.status !== 'sent') {
+    if (quote.status === 'APPROVED') {
       return res.status(400).json({
         success: false,
-        error: { message: 'Quote cannot be accepted in current status' }
+        error: { message: 'Quote already approved' }
       });
     }
 
-    // Update quote status
-    const updatedQuote = await prisma.quote.update({
-      where: { id: quoteId },
+    await prisma.quoteApproval.create({
       data: {
-        status: 'accepted',
-        acceptedAt: new Date(),
-        customerSignature: signature || signatureData,
-        signedViaPortal: true
+        quoteId: quote.id,
+        signedBy: signedBy || customer.name,
+        signedAt: new Date(),
+        signatureUrl: signatureData || null,
+        ipAddress: req.ip
       }
     });
 
-    // Optionally create a job from the accepted quote
-    const existingJob = await prisma.job.findFirst({
-      where: { quoteId: quoteId }
+    await prisma.quote.update({
+      where: { id: quoteId },
+      data: { status: 'APPROVED' }
     });
 
-    if (!existingJob) {
-      const job = await prisma.job.create({
-        data: {
-          companyId: customer.companyId,
-          customerId: customer.id,
-          customerName: customer.name,
-          customerEmail: customer.email,
-          customerPhone: customer.phone,
-          address: quote.address,
-          title: `Roofing Job - ${customer.name}`,
-          description: quote.description,
-          estimatedCost: quote.totalAmount,
-          status: 'scheduled',
-          quoteId: quoteId,
-          startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Default to 1 week out
-        }
-      });
-
-      res.json({
-        success: true,
-        data: { quote: updatedQuote, job }
-      });
-    } else {
-      res.json({
-        success: true,
-        data: { quote: updatedQuote, job: existingJob }
-      });
-    }
+    res.json({
+      success: true,
+      data: { message: 'Quote accepted successfully' }
+    });
   } catch (error) {
     console.error('Accept quote error:', error);
     res.status(500).json({
@@ -330,10 +258,6 @@ async function acceptQuote(req, res) {
   }
 }
 
-/**
- * Reject quote
- * POST /api/customer/:token/quote/:quoteId/reject
- */
 async function rejectQuote(req, res) {
   try {
     const { token, quoteId } = req.params;
@@ -353,18 +277,25 @@ async function rejectQuote(req, res) {
       });
     }
 
-    const updatedQuote = await prisma.quote.update({
-      where: { id: quoteId, customerId: customer.id },
-      data: {
-        status: 'rejected',
-        rejectedAt: new Date(),
-        rejectionReason: reason
-      }
+    const quote = await prisma.quote.findFirst({
+      where: { id: quoteId, customerId: customer.id }
+    });
+
+    if (!quote) {
+      return res.status(404).json({
+        success: false,
+        error: { message: 'Quote not found' }
+      });
+    }
+
+    await prisma.quote.update({
+      where: { id: quoteId },
+      data: { status: 'REJECTED', notes: reason ? `Rejected: ${reason}` : quote.notes }
     });
 
     res.json({
       success: true,
-      data: { quote: updatedQuote }
+      data: { message: 'Quote rejected' }
     });
   } catch (error) {
     console.error('Reject quote error:', error);
@@ -375,10 +306,6 @@ async function rejectQuote(req, res) {
   }
 }
 
-/**
- * Get invoice detail for customer
- * GET /api/customer/:token/invoice/:invoiceId
- */
 async function getInvoiceDetail(req, res) {
   try {
     const { token, invoiceId } = req.params;
@@ -398,15 +325,8 @@ async function getInvoiceDetail(req, res) {
     }
 
     const invoice = await prisma.invoice.findFirst({
-      where: {
-        id: invoiceId,
-        customerId: customer.id
-      },
-      include: {
-        items: true,
-        payments: true,
-        company: true
-      }
+      where: { id: invoiceId, customerId: customer.id },
+      include: { payments: true, job: true }
     });
 
     if (!invoice) {
@@ -416,34 +336,12 @@ async function getInvoiceDetail(req, res) {
       });
     }
 
-    const amountDue = invoice.totalAmount - (invoice.paidAmount || 0);
-
     res.json({
       success: true,
       data: {
         invoice: {
-          id: invoice.id,
-          invoiceNumber: invoice.invoiceNumber || invoice.id.slice(0, 8),
-          totalAmount: invoice.totalAmount,
-          paidAmount: invoice.paidAmount || 0,
-          amountDue,
-          status: invoice.status,
-          dueDate: invoice.dueDate,
-          createdAt: invoice.createdAt,
-          items: invoice.items,
-          payments: invoice.payments,
-          currency: invoice.currency || 'USD',
-          countryCode: invoice.countryCode || 'US',
-          customer: {
-            name: customer.name,
-            email: customer.email,
-            phone: customer.phone
-          },
-          company: {
-            name: invoice.company?.name || 'RoofManager',
-            phone: invoice.company?.phone,
-            email: invoice.company?.email
-          }
+          ...invoice,
+          lineItems: typeof invoice.lineItems === 'string' ? JSON.parse(invoice.lineItems) : invoice.lineItems
         }
       }
     });
@@ -456,10 +354,6 @@ async function getInvoiceDetail(req, res) {
   }
 }
 
-/**
- * Get job detail for customer
- * GET /api/customer/:token/job/:jobId
- */
 async function getJobDetail(req, res) {
   try {
     const { token, jobId } = req.params;
@@ -479,18 +373,7 @@ async function getJobDetail(req, res) {
     }
 
     const job = await prisma.job.findFirst({
-      where: {
-        id: jobId,
-        customerId: customer.id
-      },
-      include: {
-        photos: true,
-        crew: {
-          include: {
-            user: true
-          }
-        }
-      }
+      where: { id: jobId, customerId: customer.id }
     });
 
     if (!job) {
@@ -502,32 +385,7 @@ async function getJobDetail(req, res) {
 
     res.json({
       success: true,
-      data: {
-        job: {
-          id: job.id,
-          title: job.title,
-          status: job.status,
-          startDate: job.startDate,
-          scheduledEndDate: job.scheduledEndDate,
-          completedAt: job.actualEndDate,
-          address: job.address,
-          description: job.description,
-          notes: job.notes || [],
-          timeline: [],
-          quote: null,
-          invoice: null,
-          customer: {
-            name: customer.name,
-            email: customer.email,
-            phone: customer.phone
-          },
-          company: {
-            name: job.company?.name || 'RoofManager',
-            phone: job.company?.phone,
-            email: job.company?.email
-          }
-        }
-      }
+      data: { job }
     });
   } catch (error) {
     console.error('Job detail error:', error);

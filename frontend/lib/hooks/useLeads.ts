@@ -3,16 +3,26 @@ import api from "@/lib/api"
 
 export interface Lead {
   id: string
-  name: string
+  firstName: string
+  lastName: string
   email: string
   phone: string
   address: string
-  status: "new" | "contacted" | "qualified" | "proposal" | "negotiation" | "won" | "lost"
+  status: string
   source: string
   notes: string
+  propertyType: string
   estimatedValue: number
   createdAt: string
   updatedAt: string
+  name?: string
+}
+
+function enrichLead(lead: Lead): Lead {
+  return {
+    ...lead,
+    name: `${lead.firstName || ''} ${lead.lastName || ''}`.trim()
+  }
 }
 
 export function useLeads() {
@@ -20,7 +30,8 @@ export function useLeads() {
     queryKey: ["leads"],
     queryFn: async () => {
       const response = await api.get("/leads")
-      return response.data.data.leads || []
+      const leads = response.data?.data?.leads || response.data?.leads || []
+      return leads.map(enrichLead)
     },
   })
 }
@@ -30,7 +41,8 @@ export function useLead(id: string) {
     queryKey: ["lead", id],
     queryFn: async () => {
       const response = await api.get(`/leads/${id}`)
-      return response.data.data
+      const lead = response.data?.data || response.data
+      return enrichLead(lead)
     },
     enabled: !!id,
   })
@@ -40,8 +52,15 @@ export function useCreateLead() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (lead: Partial<Lead>) => {
-      const response = await api.post("/leads", lead)
+    mutationFn: async (lead: Partial<Lead> & { name?: string }) => {
+      const payload = { ...lead }
+      if (payload.name && !payload.firstName) {
+        const parts = payload.name.split(' ')
+        payload.firstName = parts[0]
+        payload.lastName = parts.slice(1).join(' ')
+      }
+      delete payload.name
+      const response = await api.post("/leads", payload)
       return response.data
     },
     onSuccess: () => {
@@ -54,8 +73,15 @@ export function useUpdateLead() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Lead> }) => {
-      const response = await api.put(`/leads/${id}`, data)
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Lead> & { name?: string } }) => {
+      const payload = { ...data }
+      if (payload.name && !payload.firstName) {
+        const parts = payload.name.split(' ')
+        payload.firstName = parts[0]
+        payload.lastName = parts.slice(1).join(' ')
+      }
+      delete payload.name
+      const response = await api.patch(`/leads/${id}`, payload)
       return response.data
     },
     onSuccess: (_, variables) => {

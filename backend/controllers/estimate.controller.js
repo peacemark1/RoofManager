@@ -458,15 +458,6 @@ async function getTrialStatus(req, res) {
   }
 }
 
-module.exports = {
-  createEstimate,
-  getEstimate,
-  updateEstimate,
-  getEstimates,
-  startTrial,
-  getTrialStatus
-};
-
 async function getEstimates(req, res) {
   try {
     const estimates = await prisma.estimate.findMany({
@@ -496,4 +487,4 @@ async function getEstimates(req, res) {
   }
 }
 
-module.exports = { createEstimate, getEstimate, updateEstimate, getEstimates };
+module.exports = { createEstimate, getEstimate, updateEstimate, getEstimates, startTrial, getTrialStatus };

@@ -59,7 +59,7 @@ export default function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
                 </Badge>
               </TableCell>
               <TableCell>{lead.source}</TableCell>
-              <TableCell>${lead.estimatedValue.toLocaleString()}</TableCell>
+              <TableCell>${(lead.estimatedValue || 0).toLocaleString()}</TableCell>
               <TableCell>
                 {new Date(lead.createdAt).toLocaleDateString()}
               </TableCell>
