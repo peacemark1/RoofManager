@@ -90,7 +90,7 @@ export default function LeadKanban({
                       <div className="flex items-center justify-between">
                         <span className="font-medium">{lead.name}</span>
                         <Badge className={statusColors[lead.status]}>
-                          ${lead.estimatedValue.toLocaleString()}
+                          ${(lead.estimatedValue || 0).toLocaleString()}
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-500">{lead.email}</p>

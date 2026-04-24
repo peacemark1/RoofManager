@@ -73,12 +73,12 @@ export default function JobDetailPage() {
             </div>
             <div className="flex items-center">
               <DollarSign className="mr-2 h-4 w-4 text-gray-500" />
-              <span>Estimated: ${job.estimatedCost.toLocaleString()}</span>
+              <span>Estimated: ${(job.estimatedCost || 0).toLocaleString()}</span>
             </div>
-            {job.finalCost > 0 && (
+            {(job.finalCost || 0) > 0 && (
               <div className="flex items-center">
                 <DollarSign className="mr-2 h-4 w-4 text-gray-500" />
-                <span>Final: ${job.finalCost.toLocaleString()}</span>
+                <span>Final: ${(job.finalCost || 0).toLocaleString()}</span>
               </div>
             )}
           </CardContent>

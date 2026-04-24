@@ -325,7 +325,7 @@ export default function PaymentsPage() {
                     <div>{payment.invoice?.invoiceNumber || "N/A"}</div>
                   </TableCell>
                   <TableCell className="font-medium">
-                    ${payment.amount.toLocaleString()}
+                    ${(payment.amount || 0).toLocaleString()}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="capitalize">
