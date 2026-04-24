@@ -240,8 +240,8 @@ class HubtelSMSService {
    * Send job assignment notification to crew member
    */
   async notifyCrewAssignment(crewMember, job) {
-    const message = `New job assigned! ${job.customerName} at ${job.address}. ` +
-      `Scheduled: ${new Date(job.startDate).toLocaleDateString()}. ` +
+    const message = `New job assigned! ${job.customerName || job.title} at ${job.address}. ` +
+      `Scheduled: ${job.scheduledStart ? new Date(job.scheduledStart).toLocaleDateString() : 'TBD'}. ` +
       `Check dashboard for details.`;
 
     return this.sendSMS({ to: crewMember.phone, message });
@@ -262,7 +262,7 @@ class HubtelSMSService {
    * Send appointment reminder to customer
    */
   async sendAppointmentReminder(customer, job, companyName = 'RoofManager') {
-    const appointmentDate = new Date(job.startDate).toLocaleDateString('en-GB');
+    const appointmentDate = job.scheduledStart ? new Date(job.scheduledStart).toLocaleDateString('en-GB') : 'TBD';
     
     const message = `Reminder: Your roofing job is scheduled for ${appointmentDate}. ` +
       `Our team will arrive between 8:00 AM - 10:00 AM. ` +
@@ -276,7 +276,7 @@ class HubtelSMSService {
    */
   async notifyQuoteReady(customer, quote, companyName = 'RoofManager') {
     const message = `Your roofing quote is ready! ` +
-      `Total: GHS ${(quote.totalAmount || 0).toLocaleString()}. ` +
+      `Total: GHS ${(quote.total || 0).toLocaleString()}. ` +
       `View and approve: ${process.env.FRONTEND_URL}/quotes/${quote.publicLink} ` +
       `- ${companyName}`;
 

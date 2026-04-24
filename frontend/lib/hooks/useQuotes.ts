@@ -1,20 +1,26 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/api"
 
+export interface QuoteItem {
+  description: string
+  quantity: number
+  unitPrice: number
+  total: number
+}
+
 export interface Quote {
   id: string
-  leadId: string
-  customerName: string
-  address: string
-  totalAmount: number
-  status: "draft" | "sent" | "viewed" | "accepted" | "rejected"
-  items: {
-    description: string
-    quantity: number
-    unitPrice: number
-    total: number
-  }[]
+  quoteNumber: string
+  jobId: string
+  total: number
+  subtotal: number
+  tax: number
+  discount: number
+  status: string
+  lineItems: QuoteItem[] | string
   validUntil: string
+  publicLink: string
+  notes: string
   createdAt: string
   updatedAt: string
 }
@@ -24,7 +30,7 @@ export function useQuotes() {
     queryKey: ["quotes"],
     queryFn: async () => {
       const response = await api.get("/quotes")
-      return response.data.data.quotes || []
+      return response.data?.data?.quotes || []
     },
   })
 }
@@ -34,7 +40,7 @@ export function useQuote(id: string) {
     queryKey: ["quote", id],
     queryFn: async () => {
       const response = await api.get(`/quotes/${id}`)
-      return response.data.data
+      return response.data?.data || response.data
     },
     enabled: !!id,
   })
@@ -59,7 +65,7 @@ export function useUpdateQuote() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Quote> }) => {
-      const response = await api.put(`/quotes/${id}`, data)
+      const response = await api.patch(`/quotes/${id}`, data)
       return response.data
     },
     onSuccess: () => {

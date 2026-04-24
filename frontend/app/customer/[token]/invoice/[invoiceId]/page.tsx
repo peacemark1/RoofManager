@@ -14,12 +14,12 @@ import { useState } from "react"
 interface InvoiceDetail {
   id: string
   invoiceNumber: string
-  totalAmount: number
-  paidAmount: number
+  total: number
+  amountPaid: number
   status: string
   dueDate: string
   description?: string
-  items: InvoiceItem[]
+  lineItems: InvoiceItem[] | string
   customer: {
     name: string
     email: string
@@ -84,7 +84,7 @@ export default function CustomerInvoicePage() {
     )
   }
 
-  const amountDue = invoice.totalAmount - invoice.paidAmount
+  const amountDue = (invoice.total || 0) - (invoice.amountPaid || 0)
   const isOverdue = new Date(invoice.dueDate) < new Date() && invoice.status !== 'paid'
   const canPay = amountDue > 0 && invoice.status !== 'paid'
 
@@ -127,9 +127,9 @@ export default function CustomerInvoicePage() {
                   <p className="text-4xl font-bold text-blue-600">
                     ${amountDue.toLocaleString()}
                   </p>
-                  {invoice.paidAmount > 0 && (
+                  {invoice.amountPaid > 0 && (
                     <p className="text-sm text-blue-600 mt-1">
-                      (${invoice.paidAmount.toLocaleString()} already paid)
+                      (${invoice.amountPaid.toLocaleString()} already paid)
                     </p>
                   )}
                 </div>
@@ -205,7 +205,7 @@ export default function CustomerInvoicePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {invoice.items.map((item: InvoiceItem) => (
+                  {(typeof invoice.lineItems === 'string' ? JSON.parse(invoice.lineItems) : invoice.lineItems || []).map((item: InvoiceItem) => (
                     <tr key={item.id}>
                       <td className="p-3">{item.description}</td>
                       <td className="p-3 text-center">{item.quantity}</td>
@@ -218,7 +218,7 @@ export default function CustomerInvoicePage() {
                   <tr>
                     <td colSpan={3} className="p-3 text-right font-bold text-lg">Total Amount</td>
                     <td className="p-3 text-right font-bold text-lg text-blue-600">
-                      ${invoice.totalAmount.toLocaleString()}
+                      ${(invoice.total || 0).toLocaleString()}
                     </td>
                   </tr>
                 </tfoot>

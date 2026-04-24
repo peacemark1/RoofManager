@@ -43,7 +43,7 @@ export default function InvoicesPage() {
 
   const filteredInvoices = invoices.filter((invoice: Invoice) => {
     const matchesSearch =
-      invoice.customerName.toLowerCase().includes(search.toLowerCase()) ||
+      (invoice.invoiceNumber || invoice.id).toLowerCase().includes(search.toLowerCase()) ||
       invoice.id.toLowerCase().includes(search.toLowerCase())
     const matchesStatus =
       statusFilter === "all" || invoice.status === statusFilter
@@ -54,14 +54,11 @@ export default function InvoicesPage() {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const invoiceData = {
-      customerName: formData.get("customerName") as string,
-      address: formData.get("address") as string,
       dueDate: formData.get("dueDate") as string,
-      totalAmount: Number(formData.get("totalAmount")),
       items: [
         {
           description: formData.get("description") as string,
-          amount: Number(formData.get("totalAmount")),
+          total: Number(formData.get("totalAmount")),
         },
       ],
       jobId: formData.get("jobId") as string,
@@ -91,11 +88,11 @@ export default function InvoicesPage() {
 
   const totalOutstanding = filteredInvoices
     .filter((i: Invoice) => i.status !== "paid" && i.status !== "cancelled")
-    .reduce((sum: number, i: Invoice) => sum + (i.totalAmount - i.paidAmount), 0)
+    .reduce((sum: number, i: Invoice) => sum + ((i.total || 0) - (i.amountPaid || 0)), 0)
 
   const totalPaid = filteredInvoices
     .filter((i: Invoice) => i.status === "paid")
-    .reduce((sum: number, i: Invoice) => sum + i.paidAmount, 0)
+    .reduce((sum: number, i: Invoice) => sum + (i.amountPaid || 0), 0)
 
   const handlePayClick = (invoice: Invoice) => {
     setSelectedInvoice(invoice)
@@ -116,7 +113,7 @@ export default function InvoicesPage() {
       if (!selectedInvoice) return null
       const response = await api.post<any>("/payments/initialize", {
         invoiceId: selectedInvoice.id,
-        customerEmail: selectedInvoice.customerEmail || "customer@example.com",
+        customerEmail: "customer@example.com",
         customerCountry: "US", // Default to US for now, can be enhanced with customer data
       })
       return response.data
@@ -221,9 +218,9 @@ export default function InvoicesPage() {
                   <TableCell className="font-medium">
                     #{invoice.id.slice(0, 8)}
                   </TableCell>
-                  <TableCell>{invoice.customerName}</TableCell>
-                  <TableCell>${invoice.totalAmount.toLocaleString()}</TableCell>
-                  <TableCell>${invoice.paidAmount.toLocaleString()}</TableCell>
+                  <TableCell>{invoice.invoiceNumber}</TableCell>
+                  <TableCell>${(invoice.total || 0).toLocaleString()}</TableCell>
+                  <TableCell>${(invoice.amountPaid || 0).toLocaleString()}</TableCell>
                   <TableCell>
                     <Badge className={invoiceStatusColors[invoice.status]}>
                       {invoice.status.charAt(0).toUpperCase() +
@@ -231,9 +228,8 @@ export default function InvoicesPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge className={paymentStatusColors[invoice.paymentStatus || "unpaid"]}>
-                      {(invoice.paymentStatus || "unpaid").charAt(0).toUpperCase() +
-                        (invoice.paymentStatus || "unpaid").slice(1)}
+                    <Badge className={paymentStatusColors[(invoice as any).paymentStatus || (invoice.amountPaid >= invoice.total ? "paid" : "unpaid")]}>
+                      {(invoice.amountPaid >= invoice.total ? "Paid" : "Unpaid")}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -247,7 +243,7 @@ export default function InvoicesPage() {
                       <Send className="h-4 w-4" />
                     </Button>
                     {(invoice.status === "sent" || invoice.status === "overdue") &&
-                      invoice.paymentStatus !== "paid" && (
+                      invoice.amountPaid < invoice.total && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -258,7 +254,7 @@ export default function InvoicesPage() {
                           <CreditCard className="h-4 w-4" />
                         </Button>
                       )}
-                    {invoice.paymentStatus === "paid" && (
+                    {invoice.amountPaid >= invoice.total && (
                       <Button variant="ghost" size="sm" className="text-green-600" title="Paid">
                         <CheckCircle className="h-4 w-4" />
                       </Button>
@@ -277,11 +273,11 @@ export default function InvoicesPage() {
           open={isPaymentModalOpen}
           onOpenChange={setIsPaymentModalOpen}
           provider={paymentData?.provider || "stripe"}
-          amount={selectedInvoice.totalAmount - (selectedInvoice.paidAmount || 0)}
+          amount={(selectedInvoice.total || 0) - (selectedInvoice.amountPaid || 0)}
           email="customer@example.com"
           reference={paymentData?.reference}
           clientSecret={paymentData?.clientSecret}
-          currency={selectedInvoice.currency || "USD"}
+          currency={"USD"}
           onSuccess={handlePaymentSuccess}
         />
       )}

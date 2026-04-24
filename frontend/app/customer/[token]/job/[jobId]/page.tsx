@@ -14,15 +14,15 @@ interface JobDetail {
   id: string
   title: string
   status: string
-  startDate: string
-  scheduledEndDate?: string
+  scheduledStart?: string
+  scheduledEnd?: string
   completedAt?: string
   address: string
   description?: string
   notes: JobNote[]
   timeline: JobTimelineItem[]
-  quote: { id: string; quoteNumber: string; totalAmount: number } | null
-  invoice: { id: string; invoiceNumber: string; totalAmount: number; status: string } | null
+  quote: { id: string; quoteNumber: string; total: number } | null
+  invoice: { id: string; invoiceNumber: string; total: number; status: string } | null
   customer: {
     name: string
     email: string
@@ -151,12 +151,12 @@ export default function CustomerJobPage() {
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <p className="text-sm text-gray-500">Start Date</p>
-                <p className="font-medium text-lg">{format(new Date(job.startDate), 'MMMM d, yyyy')}</p>
+                <p className="font-medium text-lg">{job.scheduledStart ? format(new Date(job.scheduledStart), 'MMMM d, yyyy') : 'TBD'}</p>
               </div>
-              {job.scheduledEndDate && (
+              {job.scheduledEnd && (
                 <div>
                   <p className="text-sm text-gray-500">Expected Completion</p>
-                  <p className="font-medium text-lg">{format(new Date(job.scheduledEndDate), 'MMMM d, yyyy')}</p>
+                  <p className="font-medium text-lg">{format(new Date(job.scheduledEnd), 'MMMM d, yyyy')}</p>
                 </div>
               )}
               {job.completedAt && (
@@ -227,7 +227,7 @@ export default function CustomerJobPage() {
                   <div>
                     <p className="font-medium">View Quote</p>
                     <p className="text-sm text-gray-500">
-                      #{job.quote.quoteNumber} - ${job.quote.totalAmount?.toLocaleString()}
+                      #{job.quote.quoteNumber} - ${(job.quote.total || 0).toLocaleString()}
                     </p>
                   </div>
                 </CardContent>
@@ -242,7 +242,7 @@ export default function CustomerJobPage() {
                   <div>
                     <p className="font-medium">View Invoice</p>
                     <p className="text-sm text-gray-500">
-                      #{job.invoice.invoiceNumber} - ${job.invoice.totalAmount?.toLocaleString()}
+                      #{job.invoice.invoiceNumber} - ${(job.invoice.total || 0).toLocaleString()}
                     </p>
                   </div>
                 </CardContent>

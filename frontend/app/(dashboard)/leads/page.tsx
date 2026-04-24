@@ -22,8 +22,8 @@ export default function LeadsPage() {
 
   const filteredLeads = leads.filter(
     (lead: Lead) =>
-      lead.name.toLowerCase().includes(search.toLowerCase()) ||
-      lead.email.toLowerCase().includes(search.toLowerCase())
+      (lead.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (lead.email || '').toLowerCase().includes(search.toLowerCase())
   )
 
   const handleEdit = (lead: Lead) => {

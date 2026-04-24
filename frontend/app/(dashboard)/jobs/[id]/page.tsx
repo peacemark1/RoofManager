@@ -45,7 +45,7 @@ export default function JobDetailPage() {
       </div>
 
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">{job.customerName}</h1>
+        <h1 className="text-3xl font-bold">{job.title || job.jobNumber}</h1>
         <Badge className={statusColors[job.status]}>
           {job.status.replace("_", " ").charAt(0).toUpperCase() +
             job.status.replace("_", " ").slice(1)}

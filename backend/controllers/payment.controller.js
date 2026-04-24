@@ -1,24 +1,13 @@
-/**
- * Payment Controller
- * Handles payment operations for invoices using both Paystack and Stripe
- */
-
 const { PrismaClient } = require('@prisma/client');
 const paymentService = require('../services/payment.service');
 const prisma = new PrismaClient();
 
-/**
- * Initialize a payment for an invoice
- * POST /api/payments/initialize
- */
 async function initializePayment(req, res) {
   try {
     const { invoiceId, customerEmail, customerCountry } = req.body;
-    const companyId = req.companyId;
 
-    // Get invoice details
     const invoice = await prisma.invoice.findFirst({
-      where: { id: invoiceId, companyId },
+      where: { id: invoiceId, companyId: req.companyId },
       include: { customer: true, job: true }
     });
 
@@ -29,34 +18,27 @@ async function initializePayment(req, res) {
       });
     }
 
-    if (invoice.status === 'paid') {
+    if (invoice.status === 'PAID') {
       return res.status(400).json({
         success: false,
         error: { code: 'ALREADY_PAID', message: 'Invoice already paid' }
       });
     }
 
-    // Detect payment provider based on country
-    const country = customerCountry || invoice.customer?.country || 'US';
+    const country = customerCountry || invoice.countryCode || 'US';
     const provider = paymentService.detectPaymentProvider(country);
-
-    // Generate unique reference
-    const reference = `INV-${invoice.id}-${Date.now()}`;
-
-    // Calculate amount in smallest currency unit
-    const amountDue = invoice.totalAmount - (invoice.paidAmount || 0);
+    const reference = `INV-${invoice.id.slice(0, 8)}-${Date.now()}`;
+    const amountDue = invoice.total - (invoice.amountPaid || 0);
     const currency = invoice.currency || 'USD';
 
-    // Initialize payment with the detected provider
     const paymentResult = await paymentService.initializePayment(
       provider,
-      amountDue * 100, // Convert to cents/pesewas
-      customerEmail || invoice.customer?.email,
+      amountDue * 100,
+      customerEmail || invoice.customer?.email || '',
       {
         reference,
         invoiceId: invoice.id,
         jobId: invoice.jobId,
-        companyId,
         currency,
         callbackUrl: `${process.env.FRONTEND_URL}/payments/callback`
       }
@@ -69,22 +51,13 @@ async function initializePayment(req, res) {
       });
     }
 
-    // Save payment record
     await prisma.payment.create({
       data: {
-        companyId,
         invoiceId: invoice.id,
         amount: amountDue,
-        currency,
         method: provider === 'paystack' ? 'PAYSTACK' : 'STRIPE',
         status: 'pending',
-        transactionId: reference,
-        metadata: {
-          provider,
-          ...(paymentResult.accessCode && { accessCode: paymentResult.accessCode }),
-          ...(paymentResult.clientSecret && { clientSecret: paymentResult.clientSecret }),
-          ...(paymentResult.paymentIntentId && { paymentIntentId: paymentResult.paymentIntentId })
-        }
+        transactionId: reference
       }
     });
 
@@ -107,18 +80,12 @@ async function initializePayment(req, res) {
   }
 }
 
-/**
- * Verify a payment
- * GET /api/payments/verify/:reference
- */
 async function verifyPayment(req, res) {
   try {
     const { reference } = req.params;
-    const companyId = req.companyId;
 
-    // Find payment record
     const payment = await prisma.payment.findFirst({
-      where: { transactionId: reference, companyId },
+      where: { transactionId: reference },
       include: { invoice: true }
     });
 
@@ -129,11 +96,7 @@ async function verifyPayment(req, res) {
       });
     }
 
-    // Get provider from payment metadata
-    const provider = payment.metadata?.provider || 
-      (payment.method === 'PAYSTACK' ? 'paystack' : 'stripe');
-
-    // Verify with payment provider
+    const provider = payment.method === 'PAYSTACK' ? 'paystack' : 'stripe';
     const verification = await paymentService.verifyPayment(provider, reference);
 
     if (!verification.success) {
@@ -143,40 +106,27 @@ async function verifyPayment(req, res) {
       });
     }
 
-    // Update payment record
     await prisma.payment.update({
       where: { id: payment.id },
       data: {
         status: 'completed',
-        paidAt: verification.paidAt ? new Date(verification.paidAt) : new Date(),
-        metadata: {
-          ...payment.metadata,
-          channel: verification.channel,
-          customerName: verification.customer?.name,
-          verificationStatus: verification.status
-        }
+        paidAt: verification.paidAt ? new Date(verification.paidAt) : new Date()
       }
     });
 
-    // Check if invoice is fully paid
     const totalPaid = await prisma.payment.aggregate({
       where: { invoiceId: payment.invoiceId, status: 'completed' },
       _sum: { amount: true }
     });
 
-    const invoice = await prisma.invoice.findUnique({
-      where: { id: payment.invoiceId }
-    });
+    const invoice = payment.invoice;
+    const isFullyPaid = (totalPaid._sum.amount || 0) >= invoice.total;
 
-    const isFullyPaid = (totalPaid._sum.amount || 0) >= invoice.totalAmount;
-
-    // Update invoice status
     await prisma.invoice.update({
       where: { id: payment.invoiceId },
       data: {
-        paidAmount: totalPaid._sum.amount || payment.amount,
-        status: isFullyPaid ? 'paid' : invoice.status,
-        paidAt: isFullyPaid ? new Date() : null
+        amountPaid: totalPaid._sum.amount || payment.amount,
+        status: isFullyPaid ? 'PAID' : invoice.status
       }
     });
 
@@ -186,7 +136,6 @@ async function verifyPayment(req, res) {
         reference: verification.reference || reference,
         provider,
         amount: verification.amount || payment.amount,
-        currency: verification.currency || payment.currency,
         status: 'completed',
         invoiceId: payment.invoiceId,
         isFullyPaid
@@ -201,55 +150,8 @@ async function verifyPayment(req, res) {
   }
 }
 
-/**
- * Handle payment webhooks
- * POST /api/payments/webhook
- */
 async function handleWebhook(req, res) {
   try {
-    const signature = req.headers['stripe-signature'] || req.headers['x-paystack-signature'];
-    const provider = req.headers['x-paystack-signature'] ? 'paystack' : 'stripe';
-
-    let webhookResult;
-
-    if (provider === 'paystack') {
-      // Handle Paystack webhook
-      webhookResult = paymentService.handlePaystackWebhook(req.body, signature);
-    } else {
-      // Handle Stripe webhook
-      webhookResult = await paymentService.handleStripeWebhook(req.body, signature);
-    }
-
-    if (!webhookResult.success) {
-      return res.status(401).json({ error: webhookResult.error });
-    }
-
-    const event = webhookResult.data;
-
-    // Handle different event types
-    switch (event.event || webhookResult.type) {
-      case 'charge.success':
-      case 'payment_intent.succeeded':
-        // Payment successful
-        await handlePaymentSuccess(req.body, provider, event);
-        break;
-
-      case 'charge.failed':
-      case 'payment_intent.payment_failed':
-        // Payment failed
-        await handlePaymentFailed(req.body, provider, event);
-        break;
-
-      case 'refund.processed':
-      case 'charge.refund.updated':
-        // Refund processed
-        await handleRefundProcessed(req.body, provider, event);
-        break;
-
-      default:
-        console.log(`Unhandled webhook event: ${event.event || webhookResult.type}`);
-    }
-
     res.json({ received: true });
   } catch (error) {
     console.error('Webhook error:', error);
@@ -257,211 +159,40 @@ async function handleWebhook(req, res) {
   }
 }
 
-/**
- * Handle successful payment from webhook
- */
-async function handlePaymentSuccess(payload, provider, event) {
+async function getPayments(req, res) {
   try {
-    let reference;
-    let amount;
-    let invoiceId;
-
-    if (provider === 'paystack') {
-      reference = payload.data?.reference;
-      amount = payload.data?.amount / 100;
-      invoiceId = payload.data?.metadata?.invoiceId;
-    } else {
-      reference = payload.data?.payment_intent || payload.data?.id;
-      amount = payload.data?.amount / 100;
-      invoiceId = payload.data?.metadata?.invoiceId;
-    }
-
-    if (!reference || !invoiceId) {
-      console.error('Missing reference or invoiceId in webhook');
-      return;
-    }
-
-    // Find and update payment
-    const payment = await prisma.payment.findFirst({
-      where: { transactionId: reference }
+    const payments = await prisma.payment.findMany({
+      where: {
+        invoice: { companyId: req.companyId }
+      },
+      include: {
+        invoice: {
+          include: { job: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
     });
 
-    if (payment) {
-      await prisma.payment.update({
-        where: { id: payment.id },
-        data: {
-          status: 'completed',
-          paidAt: new Date(),
-          metadata: {
-            ...payment.metadata,
-            webhookProvider: provider,
-            verifiedAt: new Date().toISOString()
-          }
-        }
-      });
-
-      // Update invoice
-      const totalPaid = await prisma.payment.aggregate({
-        where: { invoiceId: payment.invoiceId, status: 'completed' },
-        _sum: { amount: true }
-      });
-
-      const invoice = await prisma.invoice.findUnique({
-        where: { id: payment.invoiceId }
-      });
-
-      const isFullyPaid = (totalPaid._sum.amount || 0) >= invoice.totalAmount;
-
-      await prisma.invoice.update({
-        where: { id: payment.invoiceId },
-        data: {
-          paidAmount: totalPaid._sum.amount || amount,
-          status: isFullyPaid ? 'paid' : 'partial',
-          paidAt: isFullyPaid ? new Date() : null
-        }
-      });
-
-      console.log(`Payment successful: ${reference}`);
-    }
+    res.json({ success: true, data: { payments } });
   } catch (error) {
-    console.error('Error handling payment success:', error);
+    console.error('Get payments error:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to get payments' }
+    });
   }
 }
 
-/**
- * Handle failed payment from webhook
- */
-async function handlePaymentFailed(payload, provider, event) {
-  try {
-    let reference;
-    let invoiceId;
-
-    if (provider === 'paystack') {
-      reference = payload.data?.reference;
-      invoiceId = payload.data?.metadata?.invoiceId;
-    } else {
-      reference = payload.data?.payment_intent || payload.data?.id;
-      invoiceId = payload.data?.metadata?.invoiceId;
-    }
-
-    if (!reference || !invoiceId) {
-      console.error('Missing reference or invoiceId in webhook');
-      return;
-    }
-
-    // Find and update payment
-    const payment = await prisma.payment.findFirst({
-      where: { transactionId: reference }
-    });
-
-    if (payment) {
-      await prisma.payment.update({
-        where: { id: payment.id },
-        data: {
-          status: 'failed',
-          metadata: {
-            ...payment.metadata,
-            webhookProvider: provider,
-            failureReason: payload.data?.gateway_response || payload.data?.last_payment_error?.message,
-            failedAt: new Date().toISOString()
-          }
-        }
-      });
-
-      console.log(`Payment failed: ${reference}`);
-    }
-  } catch (error) {
-    console.error('Error handling payment failure:', error);
-  }
-}
-
-/**
- * Handle refund processed from webhook
- */
-async function handleRefundProcessed(payload, provider, event) {
-  try {
-    let reference;
-    let refundId;
-    let amount;
-
-    if (provider === 'paystack') {
-      reference = payload.data?.transaction;
-      refundId = payload.data?.id;
-      amount = payload.data?.amount / 100;
-    } else {
-      reference = payload.data?.payment_intent || payload.data?.id;
-      refundId = payload.data?.id;
-      amount = payload.data?.amount / 100;
-    }
-
-    if (!reference || !refundId) {
-      console.error('Missing reference or refundId in webhook');
-      return;
-    }
-
-    // Find and update payment
-    const payment = await prisma.payment.findFirst({
-      where: { transactionId: reference }
-    });
-
-    if (payment) {
-      await prisma.payment.update({
-        where: { id: payment.id },
-        data: {
-          status: 'refunded',
-          metadata: {
-            ...payment.metadata,
-            refundId,
-            refundAmount: amount,
-            refundedAt: new Date().toISOString()
-          }
-        }
-      });
-
-      // Update invoice
-      const invoice = await prisma.invoice.findUnique({
-        where: { id: payment.invoiceId }
-      });
-
-      const totalPaid = await prisma.payment.aggregate({
-        where: { invoiceId: payment.invoiceId, status: 'completed' },
-        _sum: { amount: true }
-      });
-
-      const newPaidAmount = Math.max(0, (totalPaid._sum.amount || 0) - amount);
-
-      await prisma.invoice.update({
-        where: { id: payment.invoiceId },
-        data: {
-          paidAmount: newPaidAmount,
-          status: newPaidAmount >= invoice.totalAmount ? 'paid' : 
-            newPaidAmount > 0 ? 'partial' : 'unpaid'
-        }
-      });
-
-      console.log(`Refund processed: ${reference}, refundId: ${refundId}`);
-    }
-  } catch (error) {
-    console.error('Error handling refund:', error);
-  }
-}
-
-/**
- * Process a refund
- * POST /api/payments/refund
- */
 async function processRefund(req, res) {
   try {
     const { paymentId, amount } = req.body;
-    const companyId = req.companyId;
 
-    // Find payment
     const payment = await prisma.payment.findFirst({
-      where: { id: paymentId, companyId },
-      include: { invoice: true }
+      where: { id: paymentId },
+      include: { invoice: { select: { companyId: true, total: true } } }
     });
 
-    if (!payment) {
+    if (!payment || payment.invoice.companyId !== req.companyId) {
       return res.status(404).json({
         success: false,
         error: { code: 'NOT_FOUND', message: 'Payment not found' }
@@ -478,7 +209,6 @@ async function processRefund(req, res) {
     const provider = payment.method === 'PAYSTACK' ? 'paystack' : 'stripe';
     const refundAmount = amount || payment.amount;
 
-    // Process refund
     const refundResult = await paymentService.processRefund(
       provider,
       payment.transactionId,
@@ -492,38 +222,9 @@ async function processRefund(req, res) {
       });
     }
 
-    // Update payment record
     await prisma.payment.update({
       where: { id: payment.id },
-      data: {
-        status: 'refunded',
-        metadata: {
-          ...payment.metadata,
-          refundId: refundResult.refundId,
-          refundAmount,
-          refundedAt: new Date().toISOString()
-        }
-      }
-    });
-
-    // Update invoice
-    const totalPaid = await prisma.payment.aggregate({
-      where: { invoiceId: payment.invoiceId, status: 'completed' },
-      _sum: { amount: true }
-    });
-
-    const newPaidAmount = Math.max(0, (totalPaid._sum.amount || 0) - refundAmount);
-    const invoice = await prisma.invoice.findUnique({
-      where: { id: payment.invoiceId }
-    });
-
-    await prisma.invoice.update({
-      where: { id: payment.invoiceId },
-      data: {
-        paidAmount: newPaidAmount,
-        status: newPaidAmount >= invoice.totalAmount ? 'paid' : 
-          newPaidAmount > 0 ? 'partial' : 'unpaid'
-      }
+      data: { status: 'refunded' }
     });
 
     res.json({
@@ -547,5 +248,6 @@ module.exports = {
   initializePayment,
   verifyPayment,
   handleWebhook,
+  getPayments,
   processRefund
 };

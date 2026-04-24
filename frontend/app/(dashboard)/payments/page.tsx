@@ -32,21 +32,14 @@ interface Payment {
   id: string
   invoiceId: string
   amount: number
-  currency: string
   method: string
   status: string
   transactionId: string
+  stripePaymentId?: string
   createdAt: string
   paidAt?: string
-  metadata?: {
-    provider?: string
-    channel?: string
-    customerName?: string
-    invoiceNumber?: string
-  }
   invoice?: {
-    customerName: string
-    customerEmail: string
+    invoiceNumber?: string
   }
 }
 
@@ -60,12 +53,12 @@ export default function PaymentsPage() {
   const { data, isLoading, refetch } = useQuery<{ data: Payment[] }>({
     queryKey: ["payments"],
     queryFn: async () => {
-      const response = await api.get<{ data: Payment[] }>("/payments")
-      return response.data
+      const response = await api.get("/payments")
+      return response.data?.data || response.data
     },
   })
 
-  const payments = useMemo(() => data?.data || [], [data])
+  const payments = useMemo(() => (data as any)?.payments || (Array.isArray(data) ? data : []), [data])
 
   // Filter payments
   const filteredPayments = useMemo(() => {
@@ -74,12 +67,11 @@ export default function PaymentsPage() {
       // Search filter
       const matchesSearch =
         !search ||
-        payment.transactionId.toLowerCase().includes(search.toLowerCase()) ||
-        payment.invoice?.customerName?.toLowerCase().includes(search.toLowerCase()) ||
-        payment.metadata?.invoiceNumber?.toLowerCase().includes(search.toLowerCase())
+        (payment.transactionId || '').toLowerCase().includes(search.toLowerCase()) ||
+        payment.invoice?.invoiceNumber?.toLowerCase().includes(search.toLowerCase())
 
       // Provider filter
-      const provider = payment.metadata?.provider || payment.method
+      const provider = payment.method
       const matchesProvider =
         providerFilter === "all" ||
         provider.toLowerCase() === providerFilter.toLowerCase()
@@ -125,11 +117,11 @@ export default function PaymentsPage() {
     const headers = ["Date", "Invoice #", "Customer", "Amount", "Currency", "Provider", "Status", "Transaction ID"]
     const rows = filteredPayments.map((payment: Payment) => [
       new Date(payment.createdAt).toLocaleString(),
-      payment.metadata?.invoiceNumber || payment.invoiceId.slice(0, 8),
-      payment.invoice?.customerName || payment.metadata?.customerName || "N/A",
+      payment.invoice?.invoiceNumber || payment.invoiceId.slice(0, 8),
+      "N/A",
       payment.amount,
-      payment.currency,
-      payment.metadata?.provider || payment.method,
+      "USD",
+      payment.method,
       payment.status,
       payment.transactionId,
     ])
@@ -327,18 +319,17 @@ export default function PaymentsPage() {
                     </span>
                   </TableCell>
                   <TableCell className="font-medium">
-                    #{payment.metadata?.invoiceNumber || payment.invoiceId.slice(0, 8)}
+                    #{payment.invoice?.invoiceNumber || payment.invoiceId.slice(0, 8)}
                   </TableCell>
                   <TableCell>
-                    <div>{payment.invoice?.customerName || payment.metadata?.customerName || "N/A"}</div>
-                    <div className="text-xs text-gray-500">{payment.invoice?.customerEmail}</div>
+                    <div>{payment.invoice?.invoiceNumber || "N/A"}</div>
                   </TableCell>
                   <TableCell className="font-medium">
-                    {payment.currency} {payment.amount.toLocaleString()}
+                    ${payment.amount.toLocaleString()}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="capitalize">
-                      {payment.metadata?.provider || payment.method}
+                      {payment.method}
                     </Badge>
                   </TableCell>
                   <TableCell>

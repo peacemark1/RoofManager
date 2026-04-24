@@ -18,7 +18,7 @@ export default function JobsPage() {
 
   const filteredJobs = jobs.filter(
     (job: Job) =>
-      job.customerName.toLowerCase().includes(search.toLowerCase()) ||
+      (job.title || '').toLowerCase().includes(search.toLowerCase()) ||
       job.address.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -26,11 +26,11 @@ export default function JobsPage() {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const jobData = {
-      customerName: formData.get("customerName") as string,
+      title: formData.get("customerName") as string,
       address: formData.get("address") as string,
-      startDate: formData.get("startDate") as string,
+      scheduledStart: formData.get("startDate") as string,
       estimatedCost: Number(formData.get("estimatedCost")),
-      notes: formData.get("notes") as string,
+      description: formData.get("notes") as string,
     }
 
     createJob.mutate(jobData)
@@ -75,7 +75,7 @@ export default function JobsPage() {
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{job.customerName}</CardTitle>
+                    <CardTitle className="text-lg">{job.title || job.jobNumber}</CardTitle>
                     <Badge className={statusColors[job.status]}>
                       {job.status.replace("_", " ").charAt(0).toUpperCase() +
                         job.status.replace("_", " ").slice(1)}
@@ -89,11 +89,11 @@ export default function JobsPage() {
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
                     <Calendar className="mr-2 h-4 w-4" />
-                    {new Date(job.startDate).toLocaleDateString()}
+                    {job.scheduledStart ? new Date(job.scheduledStart).toLocaleDateString() : 'Not scheduled'}
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
                     <DollarSign className="mr-2 h-4 w-4" />
-                    Est: ${job.estimatedCost.toLocaleString()}
+                    Est: ${(job.estimatedCost || 0).toLocaleString()}
                   </div>
                 </CardContent>
               </Card>

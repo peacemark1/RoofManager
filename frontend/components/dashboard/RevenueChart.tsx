@@ -1,20 +1,30 @@
-
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import api from "@/lib/api";
 
-const data = [
-    { name: "Jan", total: 12000 },
-    { name: "Feb", total: 15000 },
-    { name: "Mar", total: 18000 },
-    { name: "Apr", total: 22000 },
-    { name: "May", total: 25000 },
-    { name: "Jun", total: 30000 },
-    { name: "Jul", total: 28000 },
+const fallbackData = [
+    { month: "Jan", revenue: 0 },
+    { month: "Feb", revenue: 0 },
+    { month: "Mar", revenue: 0 },
 ];
 
 export function RevenueChart() {
+    const [data, setData] = useState(fallbackData);
+
+    useEffect(() => {
+        api.get('/analytics')
+            .then(res => {
+                const chartData = res.data?.data?.revenueChart;
+                if (chartData && chartData.length > 0) {
+                    setData(chartData);
+                }
+            })
+            .catch(() => {});
+    }, []);
+
     return (
         <Card className="bg-slate-800/50 backdrop-blur border-slate-700 text-slate-100 shadow-lg">
             <CardHeader>
@@ -24,7 +34,7 @@ export function RevenueChart() {
                 <ResponsiveContainer width="100%" height={350}>
                     <LineChart data={data}>
                         <XAxis
-                            dataKey="name"
+                            dataKey="month"
                             stroke="#94a3b8"
                             fontSize={12}
                             tickLine={false}
@@ -43,7 +53,7 @@ export function RevenueChart() {
                         />
                         <Line
                             type="monotone"
-                            dataKey="total"
+                            dataKey="revenue"
                             stroke="#06b6d4"
                             strokeWidth={2}
                             dot={false}
