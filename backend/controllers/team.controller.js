@@ -179,6 +179,21 @@ async function acceptInvite(req, res) {
       });
     }
 
+    // Check subscription member limit at acceptance time
+    const subscription = await prisma.subscription.findUnique({
+      where: { companyId: invite.companyId }
+    });
+    const currentMemberCount = await prisma.user.count({
+      where: { companyId: invite.companyId }
+    });
+    const maxUsers = subscription?.maxUsers || 3;
+    if (currentMemberCount >= maxUsers) {
+      return res.status(403).json({
+        success: false,
+        error: { message: `This company has reached its plan limit of ${maxUsers} team members. Please ask an admin to upgrade.` }
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await prisma.$transaction([
@@ -332,11 +347,11 @@ async function updateTeamMember(req, res) {
       });
     }
 
-    // Prevent self-deactivation
-    if (id === req.user.id && isActive === false) {
+    // Prevent self-deactivation or self-demotion
+    if (id === req.user.id && (isActive === false || (role && role !== req.user.role))) {
       return res.status(400).json({
         success: false,
-        error: { message: 'You cannot deactivate your own account' }
+        error: { message: 'You cannot deactivate or change the role of your own account' }
       });
     }
 
