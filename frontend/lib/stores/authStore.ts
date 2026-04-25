@@ -30,6 +30,7 @@ interface AuthState {
   logout: () => void;
   setUser: (user: User) => void;
   setToken: (token: string) => void;
+  setCompany: (company: Company) => void;
   updateUser: (user: Partial<User>) => void;
 }
 
@@ -101,6 +102,10 @@ export const useAuthStore = create<AuthState>()(
 
       setToken: (token: string) => {
         set({ token, isAuthenticated: true });
+      },
+
+      setCompany: (company: Company) => {
+        set({ company });
       },
 
       updateUser: (userData) =>

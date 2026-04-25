@@ -15,6 +15,7 @@ function InviteForm() {
   const token = searchParams.get("token")
   const setUser = useAuthStore((state) => state.setUser)
   const setToken = useAuthStore((state) => state.setToken)
+  const setCompany = useAuthStore((state) => state.setCompany)
 
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
@@ -40,9 +41,11 @@ function InviteForm() {
       localStorage.setItem("token", data.token)
       setToken(data.token)
       setUser(data.user)
+      if (data.company) setCompany(data.company)
       router.push("/dashboard")
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to accept invitation"
+      const axiosErr = err as { response?: { data?: { error?: { message?: string } } } }
+      const message = axiosErr?.response?.data?.error?.message || (err instanceof Error ? err.message : "Failed to accept invitation")
       setError(message)
     } finally {
       setIsLoading(false)
