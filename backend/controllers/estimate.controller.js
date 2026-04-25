@@ -496,4 +496,4 @@ async function getEstimates(req, res) {
   }
 }
 
-module.exports = { createEstimate, getEstimate, updateEstimate, getEstimates };
+module.exports = { createEstimate, getEstimate, updateEstimate, getEstimates, startTrial, getTrialStatus };
