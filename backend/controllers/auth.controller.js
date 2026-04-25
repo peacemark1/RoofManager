@@ -222,7 +222,105 @@ async function login(req, res) {
     }
 }
 
+/**
+ * Request password reset — sends a reset link via email
+ */
+async function forgotPassword(req, res) {
+    try {
+        const { email } = req.body;
+
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        // Always return success to prevent email enumeration
+        if (!user) {
+            return res.json({ success: true, message: 'If an account exists, a reset link has been sent.' });
+        }
+
+        // Generate a secure token
+        const crypto = require('crypto');
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+        await prisma.passwordReset.create({
+            data: { userId: user.id, token, expiresAt }
+        });
+
+        // Send reset email
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const resetLink = `${frontendUrl}/reset-password?token=${token}`;
+        const { sendEmail } = require('../services/email.service');
+        await sendEmail({
+            to: user.email,
+            subject: 'Reset Your RoofManager Password',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <div style="background: linear-gradient(135deg, #0891b2 0%, #3b82f6 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                        <h1 style="color: white; margin: 0;">RoofManager</h1>
+                    </div>
+                    <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px;">
+                        <h2>Password Reset</h2>
+                        <p>Hi ${user.firstName},</p>
+                        <p>We received a request to reset your password. Click the button below to choose a new password:</p>
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${resetLink}" style="background: #0891b2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
+                                Reset Password
+                            </a>
+                        </div>
+                        <p style="color: #6b7280; font-size: 14px;">This link expires in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+                    </div>
+                </div>
+            `
+        });
+
+        res.json({ success: true, message: 'If an account exists, a reset link has been sent.' });
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({ success: false, error: { message: 'Failed to process request' } });
+    }
+}
+
+/**
+ * Reset password using a token
+ */
+async function resetPassword(req, res) {
+    try {
+        const { token, password } = req.body;
+
+        const resetRecord = await prisma.passwordReset.findUnique({
+            where: { token },
+            include: { user: true }
+        });
+
+        if (!resetRecord || resetRecord.used || resetRecord.expiresAt < new Date()) {
+            return res.status(400).json({
+                success: false,
+                error: { message: 'Invalid or expired reset token' }
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await prisma.$transaction([
+            prisma.user.update({
+                where: { id: resetRecord.userId },
+                data: { password: hashedPassword }
+            }),
+            prisma.passwordReset.update({
+                where: { id: resetRecord.id },
+                data: { used: true }
+            })
+        ]);
+
+        res.json({ success: true, message: 'Password has been reset successfully.' });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(500).json({ success: false, error: { message: 'Failed to reset password' } });
+    }
+}
+
 module.exports = {
     register,
-    login
+    login,
+    forgotPassword,
+    resetPassword
 };
