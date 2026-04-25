@@ -123,7 +123,7 @@ export default function ProfileSettingsPage() {
                 </Button>
               </div>
               <p className="text-sm text-gray-400">
-                You're currently on a free 14-day Pro trial. Upgrade to continue enjoying premium features.
+                You&apos;re currently on a free 14-day Pro trial. Upgrade to continue enjoying premium features.
               </p>
             </div>
           ) : trialUsed ? (
