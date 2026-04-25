@@ -71,6 +71,12 @@ async function inviteTeamMember(req, res) {
         error: { message: 'User is already a member of this company' }
       });
     }
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'This email is already registered. The user must use their existing account.' }
+      });
+    }
 
     // Check for existing pending invite
     const existingInvite = await prisma.teamInvite.findFirst({
