@@ -40,7 +40,8 @@ export default function RegisterPage() {
       )
       router.push("/dashboard")
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Registration failed"
+      const axiosErr = err as { response?: { data?: { error?: { message?: string } } } }
+      const message = axiosErr?.response?.data?.error?.message || (err instanceof Error ? err.message : "Registration failed")
       setError(message)
     }
   }

@@ -7,7 +7,7 @@ import { useAuthStore } from "@/lib/stores/authStore"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Home, User, Mail, Lock } from "lucide-react"
+import { Home, User, Phone, Lock } from "lucide-react"
 
 function InviteForm() {
   const router = useRouter()
@@ -123,7 +123,7 @@ function InviteForm() {
                 Phone (optional)
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
                 <Input
                   id="phone"
                   type="tel"
