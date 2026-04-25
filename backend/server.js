@@ -21,10 +21,10 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+    if (!origin || allowedOrigins.some(allowed => origin === allowed)) {
       callback(null, true);
     } else {
-      callback(null, true); // Allow all in production for now (Vercel preview URLs etc.)
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
