@@ -33,10 +33,12 @@ export default function ProfileSettingsPage() {
   })
 
   const updateProfile = useMutation({
-    mutationFn: async (formData: any) => {
-      return new Promise((resolve) => setTimeout(resolve, 500))
+    mutationFn: async (formData: { firstName: string; lastName: string; phone: string }) => {
+      const response = await api.put("/settings/profile", formData)
+      return response.data.data
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] })
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     }
@@ -174,15 +176,23 @@ export default function ProfileSettingsPage() {
           <CardTitle>Personal Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <form onSubmit={(e) => { e.preventDefault(); updateProfile.mutate({}) }}>
+          <form onSubmit={(e) => {
+              e.preventDefault()
+              const form = e.target as HTMLFormElement
+              updateProfile.mutate({
+                firstName: (form.elements.namedItem("firstName") as HTMLInputElement).value,
+                lastName: (form.elements.namedItem("lastName") as HTMLInputElement).value,
+                phone: (form.elements.namedItem("phone") as HTMLInputElement).value,
+              })
+            }}>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
-                <Input id="firstName" defaultValue={user.firstName} />
+                <Input id="firstName" name="firstName" defaultValue={user.firstName} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input id="lastName" defaultValue={user.lastName} />
+                <Input id="lastName" name="lastName" defaultValue={user.lastName} />
               </div>
             </div>
             <div className="space-y-2 mb-4">
@@ -192,7 +202,7 @@ export default function ProfileSettingsPage() {
             </div>
             <div className="space-y-2 mb-6">
               <Label htmlFor="phone">Phone</Label>
-              <Input id="phone" defaultValue={user.phone || ""} />
+              <Input id="phone" name="phone" defaultValue={user.phone || ""} />
             </div>
             <div className="flex items-center gap-4">
               <Button type="submit" disabled={updateProfile.isPending}>
@@ -217,7 +227,9 @@ export default function ProfileSettingsPage() {
           <p className="text-sm text-gray-500 mb-4">
             Security settings are currently managed by the administrator.
           </p>
-          <Button variant="outline" disabled>Change Password</Button>
+          <a href="/forgot-password">
+            <Button variant="outline" type="button">Change Password</Button>
+          </a>
         </CardContent>
       </Card>
     </div>
