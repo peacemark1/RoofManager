@@ -25,8 +25,8 @@ export default function LoginPage() {
     try {
       await login(email, password)
       router.push("/dashboard")
-    } catch (err) {
-      setError("Invalid email or password")
+    } catch (err: any) {
+      setError(err.message || "Invalid email or password")
     }
   }
 
@@ -71,7 +71,7 @@ export default function LoginPage() {
                 <label htmlFor="password" className="text-sm font-medium text-slate-300">
                   Password
                 </label>
-                <Link href="#" className="text-xs text-cyan-400 hover:text-cyan-300">
+                <Link href="/forgot-password" className="text-xs text-cyan-400 hover:text-cyan-300">
                   Forgot password?
                 </Link>
               </div>

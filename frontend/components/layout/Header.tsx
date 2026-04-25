@@ -4,7 +4,7 @@
 import { Bell, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/store/auth";
+import { useAuthStore } from "@/lib/stores/authStore";
 import Link from "next/link";
 import {
   DropdownMenu,

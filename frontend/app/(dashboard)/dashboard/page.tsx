@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useAuthStore } from "@/store/auth";
+import { useAuthStore } from "@/lib/stores/authStore";
 import { DashboardMetrics } from "@/components/dashboard/DashboardMetrics";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";

@@ -17,7 +17,7 @@ import {
   MessageSquare,
   Package,
 } from "lucide-react";
-import { useAuthStore } from "@/store/auth";
+import { useAuthStore } from "@/lib/stores/authStore";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },

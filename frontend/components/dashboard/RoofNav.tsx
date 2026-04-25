@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useAuthStore } from "@/store/auth";
+import { useAuthStore } from "@/lib/stores/authStore";
 import {
   LayoutDashboard,
   Users,
