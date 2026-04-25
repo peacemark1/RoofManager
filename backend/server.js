@@ -25,6 +25,11 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/leads', require('./routes/lead.routes'));
