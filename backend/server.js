@@ -44,6 +44,7 @@ app.use('/api/settings', require('./routes/settings.routes'));
 app.use('/api/materials', require('./routes/material.routes'));
 app.use('/api/analytics', require('./routes/analytics.routes'));
 app.use('/api/company', require('./routes/company.routes'));
+app.use('/api/team', require('./routes/team.routes'));
 
 // Error handling
 app.use((err, req, res, next) => {
