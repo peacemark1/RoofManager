@@ -12,7 +12,7 @@ const prisma = new PrismaClient()
  */
 async function getNotificationPreferences(req, res) {
   try {
-    const userId = req.userId
+    const userId = req.user.id
     const companyId = req.companyId
 
     const user = await prisma.user.findFirst({
@@ -79,7 +79,7 @@ async function getNotificationPreferences(req, res) {
  */
 async function updateNotificationPreferences(req, res) {
   try {
-    const userId = req.userId
+    const userId = req.user.id
     const companyId = req.companyId
     const {
       emailEnabled,
@@ -236,7 +236,7 @@ async function shouldSendNotification(userId, type, amount = 0) {
  */
 async function getSettings(req, res) {
   try {
-    const userId = req.userId
+    const userId = req.user.id
     const companyId = req.companyId
 
     const user = await prisma.user.findFirst({
@@ -323,7 +323,7 @@ async function getNotificationPreferencesData(userId) {
  */
 async function updateProfile(req, res) {
   try {
-    const userId = req.userId
+    const userId = req.user.id
     const { firstName, lastName, phone } = req.body
 
     const updateData = {}

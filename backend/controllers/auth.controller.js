@@ -245,32 +245,36 @@ async function forgotPassword(req, res) {
             data: { userId: user.id, token, expiresAt }
         });
 
-        // Send reset email
+        // Send reset email (fire-and-forget so the response isn't blocked by SMTP)
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         const resetLink = `${frontendUrl}/reset-password?token=${token}`;
-        const { sendEmail } = require('../services/email.service');
-        await sendEmail({
-            to: user.email,
-            subject: 'Reset Your RoofManager Password',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <div style="background: linear-gradient(135deg, #0891b2 0%, #3b82f6 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
-                        <h1 style="color: white; margin: 0;">RoofManager</h1>
-                    </div>
-                    <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px;">
-                        <h2>Password Reset</h2>
-                        <p>Hi ${user.firstName},</p>
-                        <p>We received a request to reset your password. Click the button below to choose a new password:</p>
-                        <div style="text-align: center; margin: 30px 0;">
-                            <a href="${resetLink}" style="background: #0891b2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
-                                Reset Password
-                            </a>
+        try {
+            const { sendEmail } = require('../services/email.service');
+            sendEmail({
+                to: user.email,
+                subject: 'Reset Your RoofManager Password',
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <div style="background: linear-gradient(135deg, #0891b2 0%, #3b82f6 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                            <h1 style="color: white; margin: 0;">RoofManager</h1>
                         </div>
-                        <p style="color: #6b7280; font-size: 14px;">This link expires in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+                        <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px;">
+                            <h2>Password Reset</h2>
+                            <p>Hi ${user.firstName},</p>
+                            <p>We received a request to reset your password. Click the button below to choose a new password:</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${resetLink}" style="background: #0891b2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
+                                    Reset Password
+                                </a>
+                            </div>
+                            <p style="color: #6b7280; font-size: 14px;">This link expires in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+                        </div>
                     </div>
-                </div>
-            `
-        });
+                `
+            }).catch(err => console.error('Failed to send reset email:', err.message));
+        } catch (emailErr) {
+            console.error('Email service unavailable:', emailErr.message);
+        }
 
         res.json({ success: true, message: 'If an account exists, a reset link has been sent.' });
     } catch (error) {
