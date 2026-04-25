@@ -16,8 +16,11 @@ import {
   Bell,
   MessageSquare,
   Package,
+  UsersRound,
+  BarChart3,
+  CreditCard,
 } from "lucide-react";
-import { useAuthStore } from "@/store/auth";
+import { useAuthStore } from "@/lib/stores/authStore";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -29,12 +32,15 @@ const navigation = [
   { name: "Payments", href: "/payments", icon: DollarSign },
   { name: "Messages", href: "/messages", icon: MessageSquare },
   { name: "Materials", href: "/materials", icon: Package },
+  { name: "Analytics", href: "/analytics", icon: BarChart3 },
+  { name: "Team", href: "/team", icon: UsersRound },
   {
     name: "Settings",
     href: "/settings",
     icon: Settings,
     children: [
       { name: "Notifications", href: "/settings/notifications", icon: Bell },
+      { name: "Billing", href: "/settings/billing", icon: CreditCard },
     ],
   },
 ];

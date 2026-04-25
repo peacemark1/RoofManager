@@ -25,6 +25,11 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/leads', require('./routes/lead.routes'));
@@ -39,6 +44,8 @@ app.use('/api/settings', require('./routes/settings.routes'));
 app.use('/api/materials', require('./routes/material.routes'));
 app.use('/api/analytics', require('./routes/analytics.routes'));
 app.use('/api/company', require('./routes/company.routes'));
+app.use('/api/team', require('./routes/team.routes'));
+app.use('/api/subscription', require('./routes/subscription.routes'));
 
 // Error handling
 app.use((err, req, res, next) => {

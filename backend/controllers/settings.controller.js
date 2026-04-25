@@ -12,7 +12,7 @@ const prisma = new PrismaClient()
  */
 async function getNotificationPreferences(req, res) {
   try {
-    const userId = req.userId
+    const userId = req.user.id
     const companyId = req.companyId
 
     const user = await prisma.user.findFirst({
@@ -79,7 +79,7 @@ async function getNotificationPreferences(req, res) {
  */
 async function updateNotificationPreferences(req, res) {
   try {
-    const userId = req.userId
+    const userId = req.user.id
     const companyId = req.companyId
     const {
       emailEnabled,
@@ -236,7 +236,7 @@ async function shouldSendNotification(userId, type, amount = 0) {
  */
 async function getSettings(req, res) {
   try {
-    const userId = req.userId
+    const userId = req.user.id
     const companyId = req.companyId
 
     const user = await prisma.user.findFirst({
@@ -317,9 +317,98 @@ async function getNotificationPreferencesData(userId) {
   }
 }
 
+/**
+ * Update user profile
+ * PUT /api/settings/profile
+ */
+async function updateProfile(req, res) {
+  try {
+    const userId = req.user.id
+    const { firstName, lastName, phone } = req.body
+
+    const updateData = {}
+    if (firstName !== undefined) updateData.firstName = firstName
+    if (lastName !== undefined) updateData.lastName = lastName
+    if (phone !== undefined) updateData.phone = phone
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        role: true,
+      }
+    })
+
+    res.json({ success: true, data: updated })
+  } catch (error) {
+    console.error('Update profile error:', error)
+    res.status(500).json({ success: false, error: { message: 'Failed to update profile' } })
+  }
+}
+
+/**
+ * Update company settings (admin only)
+ * PUT /api/settings/company
+ */
+async function updateCompany(req, res) {
+  try {
+    if (req.user.role !== 'ADMIN') {
+      return res.status(403).json({ success: false, error: { message: 'Only admins can update company settings' } })
+    }
+
+    const { name, phone, address, city, state, zipCode, country, timezone, currency, primaryColor, secondaryColor } = req.body
+
+    const updateData = {}
+    if (name !== undefined) updateData.name = name
+    if (phone !== undefined) updateData.phone = phone
+    if (address !== undefined) updateData.address = address
+    if (city !== undefined) updateData.city = city
+    if (state !== undefined) updateData.state = state
+    if (zipCode !== undefined) updateData.zipCode = zipCode
+    if (country !== undefined) updateData.country = country
+    if (timezone !== undefined) updateData.timezone = timezone
+    if (currency !== undefined) updateData.currency = currency
+    if (primaryColor !== undefined) updateData.primaryColor = primaryColor
+    if (secondaryColor !== undefined) updateData.secondaryColor = secondaryColor
+
+    const updated = await prisma.company.update({
+      where: { id: req.companyId },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        subdomain: true,
+        email: true,
+        phone: true,
+        address: true,
+        city: true,
+        state: true,
+        zipCode: true,
+        country: true,
+        timezone: true,
+        currency: true,
+        primaryColor: true,
+        secondaryColor: true,
+      }
+    })
+
+    res.json({ success: true, data: updated })
+  } catch (error) {
+    console.error('Update company error:', error)
+    res.status(500).json({ success: false, error: { message: 'Failed to update company settings' } })
+  }
+}
+
 module.exports = {
   getNotificationPreferences,
   updateNotificationPreferences,
   getSettings,
-  shouldSendNotification
+  shouldSendNotification,
+  updateProfile,
+  updateCompany
 }

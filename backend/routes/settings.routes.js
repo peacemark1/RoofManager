@@ -32,4 +32,18 @@ router.get('/notifications', settingsController.getNotificationPreferences)
  */
 router.put('/notifications', settingsController.updateNotificationPreferences)
 
+/**
+ * @route   PUT /api/settings/profile
+ * @desc    Update user profile
+ * @access  Private
+ */
+router.put('/profile', settingsController.updateProfile)
+
+/**
+ * @route   PUT /api/settings/company
+ * @desc    Update company settings
+ * @access  Private (Admin only)
+ */
+router.put('/company', settingsController.updateCompany)
+
 module.exports = router
