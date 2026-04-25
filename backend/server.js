@@ -6,24 +6,52 @@ require('dotenv').config();
 
 const app = express();
 
-// Trust proxy for Railway
+// Trust proxy for Railway / Fly.io / any reverse proxy
 app.set('trust proxy', 1);
 
 // Middleware
 app.use(helmet());
+
+// CORS - allow multiple origins for production
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:3000',
+  'http://localhost:3001',
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.some(allowed => origin === allowed)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 app.use('/api/', limiter);
+
+// Health check endpoint (no auth required)
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    version: process.env.npm_package_version || '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
+  });
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
@@ -39,6 +67,18 @@ app.use('/api/settings', require('./routes/settings.routes'));
 app.use('/api/materials', require('./routes/material.routes'));
 app.use('/api/analytics', require('./routes/analytics.routes'));
 app.use('/api/company', require('./routes/company.routes'));
+app.use('/api/team', require('./routes/team.routes'));
+
+// 404 handler for unmatched API routes
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({
+      success: false,
+      error: { code: 'NOT_FOUND', message: `Route ${req.originalUrl} not found` }
+    });
+  }
+  next();
+});
 
 // Error handling
 app.use((err, req, res, next) => {
@@ -47,12 +87,14 @@ app.use((err, req, res, next) => {
     success: false,
     error: {
       code: err.code || 'INTERNAL_ERROR',
-      message: err.message || 'Internal server error'
+      message: process.env.NODE_ENV === 'production'
+        ? 'Internal server error'
+        : err.message || 'Internal server error'
     }
   });
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });

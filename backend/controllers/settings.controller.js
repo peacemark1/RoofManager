@@ -317,9 +317,112 @@ async function getNotificationPreferencesData(userId) {
   }
 }
 
+/**
+ * Update user profile
+ * PUT /api/settings/profile
+ */
+async function updateProfile(req, res) {
+  try {
+    const userId = req.user.id;
+    const { firstName, lastName, phone } = req.body;
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(firstName && { firstName }),
+        ...(lastName && { lastName }),
+        ...(phone !== undefined && { phone }),
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        role: true,
+        avatarUrl: true,
+      }
+    });
+
+    res.json({
+      success: true,
+      data: { user: updated }
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({
+      success: false,
+      error: { message: 'Failed to update profile' }
+    });
+  }
+}
+
+/**
+ * Update company settings
+ * PUT /api/settings/company
+ */
+async function updateCompany(req, res) {
+  try {
+    const companyId = req.companyId;
+    const { name, email, phone, address, city, state, zipCode, website, logo, primaryColor, secondaryColor } = req.body;
+
+    if (req.user.role !== 'ADMIN') {
+      return res.status(403).json({
+        success: false,
+        error: { message: 'Only admins can update company settings' }
+      });
+    }
+
+    const updated = await prisma.company.update({
+      where: { id: companyId },
+      data: {
+        ...(name && { name }),
+        ...(email !== undefined && { email }),
+        ...(phone !== undefined && { phone }),
+        ...(address !== undefined && { address }),
+        ...(city !== undefined && { city }),
+        ...(state !== undefined && { state }),
+        ...(zipCode !== undefined && { zipCode }),
+        ...(website !== undefined && { website }),
+        ...(logo !== undefined && { logo }),
+        ...(primaryColor && { primaryColor }),
+        ...(secondaryColor && { secondaryColor }),
+      },
+      select: {
+        id: true,
+        name: true,
+        subdomain: true,
+        email: true,
+        phone: true,
+        address: true,
+        city: true,
+        state: true,
+        zipCode: true,
+        website: true,
+        logo: true,
+        primaryColor: true,
+        secondaryColor: true,
+      }
+    });
+
+    res.json({
+      success: true,
+      data: { company: updated }
+    });
+  } catch (error) {
+    console.error('Update company error:', error);
+    res.status(500).json({
+      success: false,
+      error: { message: 'Failed to update company settings' }
+    });
+  }
+}
+
 module.exports = {
   getNotificationPreferences,
   updateNotificationPreferences,
   getSettings,
-  shouldSendNotification
+  shouldSendNotification,
+  updateProfile,
+  updateCompany
 }

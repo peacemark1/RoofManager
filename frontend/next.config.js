@@ -9,8 +9,13 @@ const withPWA = require('next-pwa')({
 
 const nextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
   images: {
-    domains: ['storage.googleapis.com', 'cloudinary.com', 'via.placeholder.com']
+    domains: ['storage.googleapis.com', 'cloudinary.com', 'via.placeholder.com'],
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.cloudinary.com' },
+      { protocol: 'https', hostname: '**.googleapis.com' },
+    ],
   },
   async rewrites() {
     return [

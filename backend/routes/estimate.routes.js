@@ -12,17 +12,17 @@ router.get('/', getEstimates);
 // POST /api/estimates - Create estimate (with optional AI generation)
 router.post('/', createEstimate);
 
-// GET /api/estimates/:id - Get estimate
-router.get('/:id', getEstimate);
-
-// PATCH /api/estimates/:id - Update estimate
-router.patch('/:id', updateEstimate);
-
-// Trial management routes
+// Trial management routes (must be before parameterized /:id routes)
 // POST /api/estimates/start-trial - Start free trial
 router.post('/start-trial', startTrial);
 
 // GET /api/estimates/trial-status - Get trial status
 router.get('/trial-status', getTrialStatus);
+
+// GET /api/estimates/:id - Get estimate
+router.get('/:id', getEstimate);
+
+// PATCH /api/estimates/:id - Update estimate
+router.patch('/:id', updateEstimate);
 
 module.exports = router;

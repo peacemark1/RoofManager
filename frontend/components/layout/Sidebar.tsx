@@ -16,6 +16,9 @@ import {
   Bell,
   MessageSquare,
   Package,
+  UserPlus,
+  Building2,
+  CreditCard,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 
@@ -34,6 +37,9 @@ const navigation = [
     href: "/settings",
     icon: Settings,
     children: [
+      { name: "Company", href: "/settings/company", icon: Building2 },
+      { name: "Team", href: "/settings/team", icon: UserPlus },
+      { name: "Billing", href: "/settings/billing", icon: CreditCard },
       { name: "Notifications", href: "/settings/notifications", icon: Bell },
     ],
   },

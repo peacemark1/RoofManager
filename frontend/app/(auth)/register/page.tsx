@@ -4,6 +4,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useAuthStore } from "@/lib/stores/authStore"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,7 +21,8 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const register = useAuthStore((state) => state.register)
+  const isLoading = useAuthStore((state) => state.isLoading)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,45 +33,16 @@ export default function RegisterPage() {
       return
     }
 
-    setIsLoading(true)
-
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company: {
-            name: companyName,
-            subdomain: subdomain
-          },
-          user: {
-            email,
-            password,
-            firstName,
-            lastName,
-            phone
-          }
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || "Registration failed")
-      }
-
-      // Store the token
-      if (data.data?.token) {
-        localStorage.setItem('token', data.data.token)
-      }
-
+      await register(
+        { name: companyName, subdomain },
+        { email, password, firstName, lastName, phone }
+      )
       router.push("/dashboard")
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setIsLoading(false)
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: { message?: string } } } }
+      const message = axiosErr?.response?.data?.error?.message || (err instanceof Error ? err.message : "Registration failed")
+      setError(message)
     }
   }
 
