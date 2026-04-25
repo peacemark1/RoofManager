@@ -46,7 +46,9 @@ async function forgotPassword(req, res) {
     // In production, send email with reset link
     // For now, log the token (replace with email service integration)
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
-    console.log(`Password reset requested for ${email}. Reset URL: ${resetUrl}`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`Password reset requested for ${email}. Reset URL: ${resetUrl}`);
+    }
 
     // TODO: Integrate with email service (SendGrid, SES, etc.)
     // await sendEmail({ to: email, subject: 'Password Reset', html: `<a href="${resetUrl}">Reset Password</a>` });

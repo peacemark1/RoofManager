@@ -113,7 +113,9 @@ async function inviteTeamMember(req, res) {
     });
 
     const inviteUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/invite?token=${token}`;
-    console.log(`Team invite sent to ${email}. Invite URL: ${inviteUrl}`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`Team invite sent to ${email}. Invite URL: ${inviteUrl}`);
+    }
 
     // TODO: Send invite email
     // await sendEmail({ to: email, subject: 'Team Invitation', html: `<a href="${inviteUrl}">Join Team</a>` });
